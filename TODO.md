@@ -5,14 +5,17 @@
 * ~~Create a note with current date in name~~
 * ~~Hotkey for note creation (ctrl+T)
 * ~~Let user to change note name on creation~~
-* Prefill YAML in note with custom Title and put cursor below it
+* ~~Prefill YAML in note with custom Title and put cursor below it
 * ~~Prevent name duplicates (Erorr: already exist)
 * ~~Prevent undefined name (esc on filename prompting shoud caused to command break)
 * ~~Prevent empty string (command break)
+* To fix timezone
+* To cover exceptions
 * Create a fancy repo for this and release extension
 
 ------------
 
+* Use rich information-message with countdown and button to rename entry after creation
 * Prevent wrong filenames (Erorr: doesn't look like proper filename)
 * Refactor: file creating and saving function
 * How workspaces really works?

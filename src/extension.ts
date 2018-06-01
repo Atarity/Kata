@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
             var homeDir = vscode.workspace.getConfiguration().get("tdm.homeDirWin");
             break;
     }
-    //Transform filename from userinput to Title without dashes
+    // Transform filename from userinput to Title without dashes
     function fileToTiltle(fileName) {
         var result = fileName.slice(11,-3);
         return result.charAt(0).toUpperCase() + result.replace(/-/g, " ").slice(1);
@@ -28,36 +28,58 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("tdm.newEntry", async () => {
         var datetime = new Date().toISOString().slice(0,10);
         const fileName = await vscode.window.showInputBox({prompt: "Edit Entry's filename", value: datetime + "-todo.md", valueSelection: [11, 15]});
-        //check null input or cancellation
+        // Check null input or cancellation
         if (fileName === undefined || fileName === null || fileName === "" ) {
             return;
+        } else {
+            var filePath = homeDir + fileName;
+            // Check if the file already exist
+            if (fs.existsSync(filePath)) {
+                vscode.window.showErrorMessage(fileName + " already exist. Try another name.")
+                return;
+            }
         }
-        //check if the file already exist
-        if (fs.existsSync(homeDir + fileName)) {
-            vscode.window.showErrorMessage(fileName + " already exist. Try another name.")
-            return;
-        }
+        // Create new file
+        var stream = fs.createWriteStream(filePath);
+        stream.once('open', function(fd) {
+            stream.write("---\n");
+            stream.write("title: " + fileToTiltle(fileName) + "\n");
+            stream.write("tags:\n");
+            stream.write("---\n\n");
+            stream.end();
+        });
     
-        const newFile = vscode.Uri.parse("untitled:" + homeDir + fileName);
-        vscode.workspace.openTextDocument(newFile).then(document => {
+        const fileUri = vscode.Uri.parse("file:" + filePath);
+        vscode.workspace.openTextDocument(fileUri).then(document => {
             const edit = new vscode.WorkspaceEdit();
+            vscode.window.showTextDocument(document).then(success => {
+                if (success) {
+                    vscode.window.activeTextEditor.selection = new vscode.Selection(new vscode.Position(5, 0), new vscode.Position(5, 0));
+                } else {
+                    vscode.window.showInformationMessage("Error while creating an Entry!");
+                    return;
+                }
+            });
+            
+            /*
             edit.insert(newFile, new vscode.Position(0, 0), "---\ntitle: " + fileToTiltle(fileName) + "\ntags:\n---\n\n");
             return vscode.workspace.applyEdit(edit).then(success => {
                 if (success) {
                     vscode.window.showTextDocument(document);
-                    vscode.commands.executeCommand("workbench.action.files.save");
+                    //vscode.commands.executeCommand("workbench.action.files.save");
                     //document.save();
                 } else {
                     vscode.window.showInformationMessage("Error while creating an Entry!");
                 }
-            });
+            });*/
         });
     });
 
     vscode.commands.registerCommand("tdm.showStats", () => {
         //vscode.window.showInformationMessage("Stats shown");
         //var pos = new vscode.Position(3, 3);
-        vscode.window.activeTextEditor.selection = new vscode.Selection(new vscode.Position(5, 0), new vscode.Position(5, 0));
+        var dt = new Date().toISOString();
+        vscode.window.showInformationMessage(dt);
         console.log("Stats");
     });
 
