@@ -1,6 +1,7 @@
 "use strict";
 import * as vscode from "vscode";
 import * as fs from "fs";
+import * as path from "path";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -39,7 +40,9 @@ export function activate(context: vscode.ExtensionContext) {
         if (fileName === undefined || fileName === null || fileName === "" ) {
             return;
         } else {
-            var filePath = homeDir + fileName;
+            console.log(homeDir);
+            var filePath = path.join(homeDir, fileName);
+            console.log(filePath);
             // Check if the file already exist
             if (fs.existsSync(filePath)) {
                 vscode.window.showErrorMessage(fileName + " already exist. Try another name.")
