@@ -18,15 +18,22 @@ export function activate(context: vscode.ExtensionContext) {
             break;
     }
     // Transform filename from userinput to Title without dashes
-    function fileToTiltle(fileName) {
+    function fileToTitle(fileName) {
         var result = fileName.slice(11,-3);
         return result.charAt(0).toUpperCase() + result.replace(/-/g, " ").slice(1);
     }
+
+    var toLocalTime = function() {
+        var d = new Date();
+        var offset = (d.getTimezoneOffset() * 60000) * -1;  // Minutes to milliseconds
+        var n = new Date(d.getTime() + offset); // Calculate unix-time for local machine
+        return n;
+    };
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
     vscode.commands.registerCommand("tdm.newEntry", async () => {
-        var datetime = new Date().toISOString().slice(0,10);
+        var datetime = toLocalTime().toISOString().slice(0,10);
         const fileName = await vscode.window.showInputBox({prompt: "Edit Entry's filename", value: datetime + "-todo.md", valueSelection: [11, 15]});
         // Check null input or cancellation
         if (fileName === undefined || fileName === null || fileName === "" ) {
@@ -43,12 +50,12 @@ export function activate(context: vscode.ExtensionContext) {
         var stream = fs.createWriteStream(filePath);
         stream.once('open', function(fd) {
             stream.write("---\n");
-            stream.write("title: " + fileToTiltle(fileName) + "\n");
+            stream.write("title: " + fileToTitle(fileName) + "\n");
             stream.write("tags:\n");
             stream.write("---\n\n");
             stream.end();
         });
-    
+        // Open new file and move coursor
         const fileUri = vscode.Uri.parse("file:" + filePath);
         vscode.workspace.openTextDocument(fileUri).then(document => {
             const edit = new vscode.WorkspaceEdit();
@@ -60,27 +67,13 @@ export function activate(context: vscode.ExtensionContext) {
                     return;
                 }
             });
-            
-            /*
-            edit.insert(newFile, new vscode.Position(0, 0), "---\ntitle: " + fileToTiltle(fileName) + "\ntags:\n---\n\n");
-            return vscode.workspace.applyEdit(edit).then(success => {
-                if (success) {
-                    vscode.window.showTextDocument(document);
-                    //vscode.commands.executeCommand("workbench.action.files.save");
-                    //document.save();
-                } else {
-                    vscode.window.showInformationMessage("Error while creating an Entry!");
-                }
-            });*/
         });
     });
 
     vscode.commands.registerCommand("tdm.showStats", () => {
         //vscode.window.showInformationMessage("Stats shown");
-        //var pos = new vscode.Position(3, 3);
-        var dt = new Date().toISOString();
-        vscode.window.showInformationMessage(dt);
-        console.log("Stats");
+        vscode.window.showInformationMessage(toLocalTime().toISOString());
+        //console.log("Stats");
     });
 
     context.subscriptions.push;

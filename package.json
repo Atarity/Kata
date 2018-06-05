@@ -1,9 +1,13 @@
 {
     "name": "tdm",
-    "displayName": "todomator",
+    "displayName": "Todomator",
     "description": "Bore-friendly notetaking automator and parser.",
     "version": "0.0.1",
-    "publisher": "Void",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Atarity/Todomator.git"
+    },
+    "publisher": "Atarity",
     "engines": {
         "vscode": "^1.23.0"
     },
