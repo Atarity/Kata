@@ -2,7 +2,7 @@
     "name": "tdm",
     "displayName": "Todomator",
     "description": "Bore-friendly notetaking automator and parser.",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "repository": {
         "type": "git",
         "url": "https://github.com/Atarity/Todomator.git"
@@ -29,7 +29,19 @@
                         "type": "string",
                         "scope": "resource",
                         "default": "/Users/foo/Notes/",
-                        "description": "Use POSIX path to the directory with notes. It can be cloud folder with local representation. Like a Dropbox. Google Drive, etc."
+                        "description": "POSIX path to the directory with Todomator's notes."
+                    },
+                    "tdm.homeDirWin": {
+                        "type": "string",
+                        "scope": "resource",
+                        "default": "C:/Users/foo/Notes/",
+                        "description": "POSIX path (back-slashed for Windows) to the directory with Todomator's notes."
+                    },
+                    "tdm.homeDirLinux": {
+                        "type": "string",
+                        "scope": "resource",
+                        "default": "/Users/foo/Notes/",
+                        "description": "POSIX path to the directory with Todomator's notes."
                     }
                 }
             }
