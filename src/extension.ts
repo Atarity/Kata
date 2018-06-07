@@ -1,6 +1,7 @@
 "use strict";
 import * as vscode from "vscode";
 import * as fs from "fs";
+import * as path from "path";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -39,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (fileName === undefined || fileName === null || fileName === "" ) {
             return;
         } else {
-            var filePath = homeDir + fileName;
+            var filePath = path.join("" + homeDir, fileName);   // homeDir to string
             // Check if the file already exist
             if (fs.existsSync(filePath)) {
                 vscode.window.showErrorMessage(fileName + " already exist. Try another name.")
@@ -56,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
             stream.end();
         });
         // Open new file and move coursor
-        const fileUri = vscode.Uri.parse("file:" + filePath);
+        const fileUri = vscode.Uri.file(filePath);  // OR uri.parse ("file:" + filePath)
         vscode.workspace.openTextDocument(fileUri).then(document => {
             const edit = new vscode.WorkspaceEdit();
             vscode.window.showTextDocument(document).then(success => {
