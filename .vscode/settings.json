@@ -7,7 +7,6 @@
     "search.exclude": {
         "out": true // set this to false to include "out" folder in search results
     },
-    "tdm.homeDirMac": "/Users/atarity/Notes-test-dir",
     "editor.tokenColorCustomizations": {
         "textMateRules": [
             {

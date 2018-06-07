@@ -14,7 +14,7 @@ Todomator is a simple automator for everyday note taking needs. Each note entry:
 This extension contributes the following settings:
 
 * `tdm.homeDirMac`: Path to your Notes home directory. Use POSIX path to the directory with notes, like ```/Users/foo/Notes/```. It can be cloud folder with local representation. Like a Dropbox. Google Drive, etc.
-* `tdm.homeDirWin`: same for Windows in case you are using different machines.
+* `tdm.homeDirWin`: same for Windows (with back-slashes → / ) in case you are using different machines.
 * `tdm.homeDirLinux`: same for Linux.
 
 ## Known Issues
@@ -23,7 +23,7 @@ It's proto, so most of exceptions not even tried to be caught.
 ## Release notes
 You can find detailed release notes in `Changelog.md`
 
-### [0.0.1] — 2018-06-03
+### [0.0.2] — 2018-06-03
 - File creation with auto-naming
 - Pre-fill YAML meta section in each note (title-based)
 - User settings for default dirrectory for different operating systems (tdm.homeDir)
