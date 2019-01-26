@@ -18,7 +18,12 @@ This extension contributes the following settings:
 * `tdm.homeDirLinux`: same for Linux.
 
 ## Known Issues
-It's proto, so most of exceptions not even tried to be caught.
+It's a proto, so most of exceptions not even tried to be caught.
+
+## Packaging for off-the-Marketplace distribution
+- `npm install` and `npm install -g vsce`
+- `npm run compile`
+- [VS code tut on packaging and publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#packaging-extensions)
 
 ## Release notes
 You can find detailed release notes in `Changelog.md`

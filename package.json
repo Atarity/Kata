@@ -20,8 +20,7 @@
     ],
     "main": "./out/extension",
     "contributes": {
-
-        "configuration" : [
+        "configuration": [
             {
                 "title": "Directory with notes",
                 "properties": {
@@ -46,7 +45,6 @@
                 }
             }
         ],
-
         "commands": [
             {
                 "command": "tdm.newEntry",
@@ -59,15 +57,13 @@
                 "category": "Todomator"
             }
         ],
-
         "keybindings": [
-			{
-				"command": "tdm.newEntry",
-				"key": "Ctrl+T"
+            {
+                "command": "tdm.newEntry",
+                "key": "Ctrl+T"
             }
         ]
     },
-
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
@@ -76,9 +72,9 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
+        "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42"
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.28"
     }
 }
