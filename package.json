@@ -2,7 +2,7 @@
     "name": "tdm",
     "displayName": "Todomator",
     "description": "Bore-friendly notetaking automator and parser.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "repository": {
         "type": "git",
         "url": "https://github.com/Atarity/Todomator.git"
@@ -16,7 +16,8 @@
     ],
     "activationEvents": [
         "onCommand:tdm.newEntry",
-        "onCommand:tdm.showStats"
+        "onCommand:tdm.showStats",
+        "onCommand:tdm.markAsDone"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -61,6 +62,16 @@
             {
                 "command": "tdm.newEntry",
                 "key": "Ctrl+T"
+            },
+            {
+                "key": "Ctrl+Shift+Q",
+                "command": "type",
+                "args": { "text": "- [ ] " },                
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "tdm.markAsDone",
+                "key": "Ctrl+Shift+W"
             }
         ]
     },

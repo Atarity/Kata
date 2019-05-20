@@ -3,21 +3,14 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 
+const CONFIGURATION_SECTION = "tdm";
+//const TEMP_HOMEDIR = "/Users/Atarity/tdm-test/2019/";
+const TEMP_HOMEDIR = "";
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-    // Getting platform-related configuration
-    switch (process.platform) {
-        case "darwin":
-            var homeDir = vscode.workspace.getConfiguration().get("tdm.homeDirMac");
-            break;
-        case "linux":
-            var homeDir = vscode.workspace.getConfiguration().get("tdm.homeDirLinux");
-            break;
-        case "win32":
-            var homeDir = vscode.workspace.getConfiguration().get("tdm.homeDirWin");
-            break;
-    }
+    const tdmController = new TDMController();
     // Transform filename from userinput to Title without dashes
     function fileToTitle(fileName) {
         var result = fileName.slice(11,-3);
@@ -40,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (fileName === undefined || fileName === null || fileName === "" ) {
             return;
         } else {
-            var filePath = path.join("" + homeDir, fileName);   // homeDir to string
+            var filePath = path.join("" + tdmController.homeDirectory, fileName);   // homeDir to string
             // Check if the file already exist
             if (fs.existsSync(filePath)) {
                 vscode.window.showErrorMessage(fileName + " already exist. Try another name.")
@@ -72,9 +65,20 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     vscode.commands.registerCommand("tdm.showStats", () => {
-        //vscode.window.showInformationMessage("Stats shown");
-        vscode.window.showInformationMessage(toLocalTime().toISOString());
-        //console.log("Stats");
+        tdmController.CountAll();
+    });
+
+    vscode.commands.registerCommand("tdm.markAsDone", () => {
+        const editor = vscode.window.activeTextEditor;
+        let curs = editor.selection.active; // returns Position
+        // console.log(`Cursor line is ${curs.line} and char is ${curs.character}`);
+        var currLine = editor.document.getText(new vscode.Range(curs.line, 0, curs.line + 1, 0));
+        if (currLine.includes("- [ ]")) {
+            var idx = currLine.indexOf("- [ ]")
+            editor.edit(editBuilder => {
+                editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + 5), "- [X]"); 
+            });
+        }
     });
 
     context.subscriptions.push;
@@ -82,4 +86,64 @@ export function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
+}
+
+class TDMController {
+    private configuration: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(CONFIGURATION_SECTION);
+    private statAn_: StatAn|null = null;
+
+    public get homeDirectory() {
+        var homeDir = "";
+        if (TEMP_HOMEDIR.length > 0) {
+            homeDir = TEMP_HOMEDIR;
+        } else {
+            switch (process.platform) {
+                case "darwin":
+                    homeDir = this.configuration.get("homeDirMac");
+                    //var homeDir = vscode.workspace.getConfiguration().get("tdm.homeDirMac");
+                    break;
+                case "linux":
+                    homeDir = this.configuration.get("homeDirLinux");
+                    //var homeDir = vscode.workspace.getConfiguration().get("tdm.homeDirLinux");
+                    break;
+                case "win32":
+                    homeDir = this.configuration.get("homeDirWin");
+                    //var homeDir = vscode.workspace.getConfiguration().get("tdm.homeDirWin");
+                    break;
+            }
+        }
+        return homeDir;
+    }
+
+    private get statAn() {
+        if (this.statAn_ === null) {
+            console.log(`Todomator: create StatAn`);
+            this.statAn_ = new StatAn();
+        }
+        return this.statAn_;
+    }
+
+    public CountAll(){
+        this.statAn.FileCounter(this.homeDirectory);
+        //console.log(this.homeDirectory);
+    }
+}
+
+class StatAn {
+    public FileCounter(dir: string) {
+        const includes = ["**/*"];
+        const excludes = [];
+        console.log("ihaa", dir);
+        vscode.workspace.findFiles(`{${includes.join(',')}}`, `{${excludes.join(',')}}`).then((files: vscode.Uri[]) => {
+            new Promise((resolve: (p: string[])=> void, reject: (reason: string) => void) => {
+                const filePathes = files.map(uri => uri.fsPath).filter(p => !path.relative(dir, p).startsWith('..'));
+                console.log(`Todomator: ${filePathes.length} files`);
+                resolve(filePathes);
+            }).then((filePathes: string[]) => {
+                vscode.window.showInformationMessage(`Found ${filePathes.length} files in workspace`);
+            }).catch((reason: string) => {
+                vscode.window.showErrorMessage(`Todomator: Error has occurred.`, reason);
+            });
+        });
+    }
 }

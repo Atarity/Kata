@@ -4,6 +4,10 @@ Todomator is a simple automator for everyday note taking needs. Each note entry:
 1. Saved in .md with file name like ```2018-06-13-todo.md```
 2. Each entry have YAML meta data at the top of file. It contains "Title" and manually filled "Tags" sections.
 
+## Useful links
+- https://github.com/uctakeoff/vscode-counter
+- https://github.com/Microsoft/vscode-extension-samples/tree/master/completions-sample
+
 ## Features
 
 - Hotkey <kbd>Ctrl</kbd>+<kbd>T</kbd> to make new note entry with today's name, which can be easily corrected.
@@ -28,9 +32,10 @@ It's a proto, so most of exceptions not even tried to be caught.
 ## Release notes
 You can find detailed release notes in `Changelog.md`
 
-### [0.0.2] — 2018-06-03
 - File creation with auto-naming
 - Pre-fill YAML meta section in each note (title-based)
 - User settings for default dirrectory for different operating systems (tdm.homeDir)
 - Hotkey for new entry (Ctrl+T)
-- Show statistics command registered for debug needs
+- Hotkey for `- [ ]` — Ctrl+Shift+Q
+- When cursor are in task line you can "close" it with Ctrl+Shift+W
+
