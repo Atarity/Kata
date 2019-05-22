@@ -67,17 +67,40 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("tdm.showStats", () => {
         tdmController.CountAll();
     });
-
+    // if todo not in string → add it. If todo in string → close it. If todo closed → open it. All by 1 hotkey loop.
     vscode.commands.registerCommand("tdm.markAsDone", () => {
         const editor = vscode.window.activeTextEditor;
-        let curs = editor.selection.active; // returns Position
+        let curs = editor.selection.active; // returns Position (line, char)
         // console.log(`Cursor line is ${curs.line} and char is ${curs.character}`);
         var currLine = editor.document.getText(new vscode.Range(curs.line, 0, curs.line + 1, 0));
-        if (currLine.includes("- [ ]")) {
-            var idx = currLine.indexOf("- [ ]")
-            editor.edit(editBuilder => {
-                editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + 5), "- [X]"); 
-            });
+        var tdLine = currLine.trim().substr(0,6);
+        var tdMarks = ['- [  ]', '- [ ]', '- []', '- [X]', '- [x]', '- [Х]', '- [х]'];
+        var i = tdMarks.length;
+        while (i--) {
+            // if it is todo and need to set X
+            if (tdLine.indexOf(tdMarks[i]) != -1 && i > 2) {
+                console.log("RELEASE", tdLine, tdMarks[i], i);
+                var idx = currLine.indexOf("-");
+                editor.edit(editBuilder => {
+                    editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + tdMarks[i].length), "- [ ]"); 
+                });
+            // if it is todo and need to unset X     
+            } else if (tdLine.indexOf(tdMarks[i]) != -1 && i < 3) {
+                console.log("SET", tdLine, tdMarks[i], i);
+                var idx = currLine.indexOf("-");
+                editor.edit(editBuilder => {
+                    editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + tdMarks[i].length), "- [X]"); 
+                });
+            // if it is not a todo line, make it so
+            } else if (tdLine.indexOf(tdMarks[i]) < 0 && i == 0) {
+                console.log(tdLine.indexOf(tdMarks[i]), i)
+                var idx = currLine.search(/\S/);
+                // if it is a new line point the idx to the very beginning of it
+                if (idx < 0) {idx = 0;}
+                editor.edit(editBuilder => {
+                    editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx), "- [ ] "); 
+                });
+            }
         }
     });
 

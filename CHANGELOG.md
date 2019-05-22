@@ -5,9 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Request: if todo not in string → add it. If todo in string → close it. If todo closed → open it. All by 1 hotkey loop.
 - Bug: new year folder autocreation 
 - Request: gather stats
-- Request: check/unckek behaviour for todo items 
+- Request: add python tool for olde journal entries conversion
+- Request: add job for jekyll site compilation from a notes
 
 ## [0.0.2] — 2019-05-20
 ### Added

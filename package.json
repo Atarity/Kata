@@ -64,14 +64,9 @@
                 "key": "Ctrl+T"
             },
             {
-                "key": "Ctrl+Shift+Q",
-                "command": "type",
-                "args": { "text": "- [ ] " },                
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
                 "command": "tdm.markAsDone",
-                "key": "Ctrl+Shift+W"
+                "key": "Ctrl+Shift+Q",
+                "when": "editorTextFocus && editorLangId == markdown"
             }
         ]
     },
