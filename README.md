@@ -35,7 +35,6 @@ You can find detailed release notes in `Changelog.md`
 - File creation with auto-naming
 - Pre-fill YAML meta section in each note (title-based)
 - User settings for default dirrectory for different operating systems (tdm.homeDir)
-- Hotkey for new entry (Ctrl+T)
-- Hotkey for `- [ ]` — Ctrl+Shift+Q
-- When cursor are in task line you can "close" it with Ctrl+Shift+W
+- Hotkey for new entry — Ctrl+T
+- One key todo loop with Ctrk+Shift+Q: If todo not in current string → add it. If todo in string → close it. If todo closed → open it. 
 
