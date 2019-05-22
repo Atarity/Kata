@@ -86,14 +86,14 @@ export function activate(context: vscode.ExtensionContext) {
                 });
             // if it is todo and need to unset X     
             } else if (tdLine.indexOf(tdMarks[i]) != -1 && i < 3) {
-                console.log("SET", tdLine, tdMarks[i], i);
+                //console.log("SET", tdLine, tdMarks[i], i);
                 var idx = currLine.indexOf("-");
                 editor.edit(editBuilder => {
                     editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + tdMarks[i].length), "- [X]"); 
                 });
             // if it is not a todo line, make it so
             } else if (tdLine.indexOf(tdMarks[i]) < 0 && i == 0) {
-                console.log(tdLine.indexOf(tdMarks[i]), i)
+                //console.log(tdLine.indexOf(tdMarks[i]), i)
                 var idx = currLine.search(/\S/);
                 // if it is a new line point the idx to the very beginning of it
                 if (idx < 0) {idx = 0;}

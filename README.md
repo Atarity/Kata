@@ -9,7 +9,6 @@ Todomator is a simple automator for everyday note taking needs. Each note entry:
 - https://github.com/Microsoft/vscode-extension-samples/tree/master/completions-sample
 
 ## Features
-
 - Hotkey <kbd>Ctrl</kbd>+<kbd>T</kbd> to make new note entry with today's name, which can be easily corrected.
 - Auto meta addition
 - OS-related user settings for Notes home directory

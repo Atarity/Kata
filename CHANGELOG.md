@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Request: add python tool for olde journal entries conversion
 - Request: add job for jekyll site compilation from a notes
 
-## [0.0.3] — 2019-05-22
+## [0.0.4] — 2019-05-22
 ### Added
 - One key todo loop with Ctrk+Shift+Q: If todo not in current string → add it. If todo in string → close it. If todo closed → open it.
 
