@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 const CONFIGURATION_SECTION = "tdm";
-//const TEMP_HOMEDIR = "/Users/Atarity/tdm-test/2019/";
+//const TEMP_HOMEDIR = "/Users/Atarity/tdm-test/";
 const TEMP_HOMEDIR = "";
 
 // this method is called when your extension is activated
@@ -23,17 +23,39 @@ export function activate(context: vscode.ExtensionContext) {
         var n = new Date(d.getTime() + offset); // Calculate unix-time for local machine
         return n;
     };
+    // Check user input filename
+    var isValid = (function() {
+        var rg1=/^[^\\/:\*\?"<>\|\[\]\{\}]+$/; // forbidden and special characters \ / : * ? " < > | [ ] { }
+        var rg2=/^\./; // cannot start with dot (.)
+        var rg3=/^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i; // forbidden file names in Win
+        return function isValid(fname) {
+          return rg1.test(fname)&&!rg2.test(fname)&&!rg3.test(fname);
+        }
+    })();
+
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
     vscode.commands.registerCommand("tdm.newEntry", async () => {
         var datetime = toLocalTime().toISOString().slice(0,10);
         const fileName = await vscode.window.showInputBox({prompt: "Edit Entry's filename", value: datetime + "-todo.md", valueSelection: [11, 15]});
-        // Check null input or cancellation
+        // Check null input or form esc
         if (fileName === undefined || fileName === null || fileName === "" ) {
             return;
         } else {
-            var filePath = path.join("" + tdmController.homeDirectory, fileName);   // homeDir to string
+            var yearDir = path.join(tdmController.homeDirectory, datetime.substring(0, 4));
+            var filePath = path.join(yearDir, fileName);   // homeDir to string
+            // Check if the file name contains restricted chars
+            if (!isValid(fileName)) {
+                vscode.window.showErrorMessage(fileName + " name contains forbidden characters.")
+                return;
+            }
+            // Create dir if not exist
+            if (!fs.existsSync(yearDir)) {
+                fs.mkdirSync(yearDir)
+                vscode.window.showInformationMessage("New directory created. Happy NY, then! " + yearDir)
+                //return;
+            }
             // Check if the file already exist
             if (fs.existsSync(filePath)) {
                 vscode.window.showErrorMessage(fileName + " already exist. Try another name.")
@@ -79,7 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
         while (i--) {
             // if it is todo and need to set X
             if (tdLine.indexOf(tdMarks[i]) != -1 && i > 2) {
-                console.log("RELEASE", tdLine, tdMarks[i], i);
+                //console.log("RELEASE", tdLine, tdMarks[i], i);
                 var idx = currLine.indexOf("-");
                 editor.edit(editBuilder => {
                     editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + tdMarks[i].length), "- [ ]"); 
@@ -98,7 +120,8 @@ export function activate(context: vscode.ExtensionContext) {
                 // if it is a new line point the idx to the very beginning of it
                 if (idx < 0) {idx = 0;}
                 editor.edit(editBuilder => {
-                    editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx), "- [ ] "); 
+                    editBuilder.insert(new vscode.Position(curs.line, idx), "- [ ] ")
+                    //editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + 5), "- [ ] "); 
                 });
             }
         }
@@ -140,7 +163,7 @@ class TDMController {
 
     private get statAn() {
         if (this.statAn_ === null) {
-            console.log(`Todomator: create StatAn`);
+            console.log(`Todomator: creating StatAn class`);
             this.statAn_ = new StatAn();
         }
         return this.statAn_;
@@ -156,14 +179,22 @@ class StatAn {
     public FileCounter(dir: string) {
         const includes = ["**/*"];
         const excludes = [];
-        console.log("ihaa", dir);
+        console.log("Todomator: tdm.homeDir* is ", dir);
         vscode.workspace.findFiles(`{${includes.join(',')}}`, `{${excludes.join(',')}}`).then((files: vscode.Uri[]) => {
             new Promise((resolve: (p: string[])=> void, reject: (reason: string) => void) => {
                 const filePathes = files.map(uri => uri.fsPath).filter(p => !path.relative(dir, p).startsWith('..'));
-                console.log(`Todomator: ${filePathes.length} files`);
+                //console.log(`Todomator: ${filePathes.length} files`);
                 resolve(filePathes);
             }).then((filePathes: string[]) => {
-                vscode.window.showInformationMessage(`Found ${filePathes.length} files in workspace`);
+                var k = filePathes.length;
+                var md = 0;
+                var rest = 0;
+                while (k--) {
+                    if (path.extname(filePathes[k]) == ".md") {
+                        md = md + 1;
+                    } else {rest = rest + 1;}
+                }
+                vscode.window.showInformationMessage(`in ${dir} workspace: Total files = ${filePathes.length} . MD files = ${md} . Other files = ${rest}`);
             }).catch((reason: string) => {
                 vscode.window.showErrorMessage(`Todomator: Error has occurred.`, reason);
             });

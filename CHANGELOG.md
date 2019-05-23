@@ -5,10 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- Bug: new year folder autocreation 
-- Request: gather stats
+- Request: breakdown stats by filetypes years and months. Show results in temp file
 - Request: add python tool for olde journal entries conversion
 - Request: add job for jekyll site compilation from a notes
+
+## [0.0.5] — 2019-05-23
+### Fixed
+- If entered filename contains forbidden symbols it'll not be created.
+- New line todo are not selected after hotkey press anymore (.replace → .insert).
+- Extension homeDir path now normilized with Node Path module.
+- Extension homeDir points to real home dir now. Not to year dir. If dirrectory not exit it will be created.
+- Show stats command works across whole homeDir now.
 
 ## [0.0.4] — 2019-05-22
 ### Added
