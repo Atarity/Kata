@@ -4,8 +4,8 @@ import * as fs from "fs";
 import * as path from "path";
 
 const CONFIGURATION_SECTION = "tdm";
-const TEMP_HOMEDIR = "/Users/Atarity/tdm-test/";
-//const TEMP_HOMEDIR = "";
+//const TEMP_HOMEDIR = "/Users/Atarity/tdm-test/";
+const TEMP_HOMEDIR = "";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -99,29 +99,29 @@ export function activate(context: vscode.ExtensionContext) {
         var tdMarks = ['- [  ]', '- [ ]', '- []', '- [X]', '- [x]', '- [Х]', '- [х]'];
         var i = tdMarks.length;
         while (i--) {
-            // if it is todo and need to set X
+            // if it is todo and need to unset X
             if (tdLine.indexOf(tdMarks[i]) != -1 && i > 2) {
-                //console.log("RELEASE", tdLine, tdMarks[i], i);
-                var idx = currLine.indexOf("-");
+                let currLineText = currLine.split(tdMarks[i])[1];
+                const tildaFirstIndex = currLine.indexOf("~");
+                const tildaLastIndex = currLine.lastIndexOf("~");
+                if (tildaFirstIndex !== -1 && tildaFirstIndex !== tildaLastIndex) {
+                    currLineText = currLineText.split('~~')[1];    
+                }
+                currLineText = currLineText.trim();
                 editor.edit(editBuilder => {
-                    editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + tdMarks[i].length), "- [ ]"); 
+                    editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), `- [ ] ${ currLineText }`); 
                 });
-            // if it is todo and need to unset X     
+            // if it is todo and need to set X     
             } else if (tdLine.indexOf(tdMarks[i]) != -1 && i < 3) {
-                //console.log("SET", tdLine, tdMarks[i], i);
-                var idx = currLine.indexOf("-");
+                const currLineText = currLine.split(tdMarks[i])[1].trim();
                 editor.edit(editBuilder => {
-                    editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + tdMarks[i].length), "- [X]"); 
+                    editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), `- [X] ~~${ currLineText }~~`); 
                 });
             // if it is not a todo line, make it so
             } else if (tdLine.indexOf(tdMarks[i]) < 0 && i == 0) {
-                //console.log(tdLine.indexOf(tdMarks[i]), i)
-                var idx = currLine.search(/\S/);
-                // if it is a new line point the idx to the very beginning of it
-                if (idx < 0) {idx = 0;}
+                const currLineText = currLine.trim();
                 editor.edit(editBuilder => {
-                    editBuilder.insert(new vscode.Position(curs.line, idx), "- [ ] ")
-                    //editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + 5), "- [ ] "); 
+                    editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), `- [ ] ${ currLineText }`);
                 });
             }
         }

@@ -20,13 +20,14 @@
         "onCommand:tdm.markAsDone"
     ],
     "main": "./out/extension",
-
     "contributes": {
         "grammars": [
             {
-              "path": "./syntaxes/injection.json",
-              "scopeName": "open-task.injection",
-              "injectTo": ["text.html.markdown"]
+                "path": "./syntaxes/injection.json",
+                "scopeName": "open-task.injection",
+                "injectTo": [
+                    "text.html.markdown"
+                ]
             }
         ],
         "configuration": [
@@ -36,19 +37,19 @@
                     "tdm.homeDirMac": {
                         "type": "string",
                         "scope": "resource",
-                        "default": "/Users/foo/Notes/",
+                        "default": "/Seredkin/Notes/",
                         "description": "POSIX path to the directory with Todomator's notes."
                     },
                     "tdm.homeDirWin": {
                         "type": "string",
                         "scope": "resource",
-                        "default": "C:/Users/foo/Notes/",
+                        "default": "C:/Seredkin/Notes/",
                         "description": "POSIX path (back-slashed for Windows) to the directory with Todomator's notes."
                     },
                     "tdm.homeDirLinux": {
                         "type": "string",
                         "scope": "resource",
-                        "default": "/Users/foo/Notes/",
+                        "default": "/Seredkin/Notes/",
                         "description": "POSIX path to the directory with Todomator's notes."
                     }
                 }
