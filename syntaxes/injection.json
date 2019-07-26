@@ -1,0 +1,16 @@
+{
+    "scopeName": "open-task.injection",
+    "injectionSelector": "L:markup.list",
+    "patterns": [
+      {
+        "include": "#task-opened"
+      }
+    ],
+    "repository": {
+      "task-opened": {
+        "begin": "a",
+        "end": "f",
+        "name": "opened.task"
+      }
+    }
+}

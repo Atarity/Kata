@@ -20,7 +20,15 @@
         "onCommand:tdm.markAsDone"
     ],
     "main": "./out/extension",
+
     "contributes": {
+        "grammars": [
+            {
+              "path": "./syntaxes/injection.json",
+              "scopeName": "open-task.injection",
+              "injectTo": ["text.html.markdown"]
+            }
+        ],
         "configuration": [
             {
                 "title": "Directory with notes",

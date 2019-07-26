@@ -4,8 +4,8 @@ import * as fs from "fs";
 import * as path from "path";
 
 const CONFIGURATION_SECTION = "tdm";
-//const TEMP_HOMEDIR = "/Users/Atarity/tdm-test/";
-const TEMP_HOMEDIR = "";
+const TEMP_HOMEDIR = "/Users/Atarity/tdm-test/";
+//const TEMP_HOMEDIR = "";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -163,7 +163,7 @@ class TDMController {
 
     private get statAn() {
         if (this.statAn_ === null) {
-            console.log(`Todomator: creating StatAn class`);
+            //console.log("Todomator: creating StatAn class");
             this.statAn_ = new StatAn();
         }
         return this.statAn_;
@@ -179,7 +179,7 @@ class StatAn {
     public FileCounter(dir: string) {
         const includes = ["**/*"];
         const excludes = [];
-        console.log("Todomator: tdm.homeDir* is ", dir);
+        console.log("Todomator: tdm.homeDir is ", dir);
         vscode.workspace.findFiles(`{${includes.join(',')}}`, `{${excludes.join(',')}}`).then((files: vscode.Uri[]) => {
             new Promise((resolve: (p: string[])=> void, reject: (reason: string) => void) => {
                 const filePathes = files.map(uri => uri.fsPath).filter(p => !path.relative(dir, p).startsWith('..'));
@@ -192,7 +192,10 @@ class StatAn {
                 while (k--) {
                     if (path.extname(filePathes[k]) == ".md") {
                         md = md + 1;
-                    } else {rest = rest + 1;}
+                    } else {
+                        rest = rest + 1;
+                        console.log(`Todomator: non-MD file found: ${filePathes[k]}`);
+                        }
                 }
                 vscode.window.showInformationMessage(`in ${dir} workspace: Total files = ${filePathes.length} . MD files = ${md} . Other files = ${rest}`);
             }).catch((reason: string) => {
