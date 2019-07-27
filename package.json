@@ -2,7 +2,7 @@
     "name": "tdm",
     "displayName": "Todomator",
     "description": "Bore-friendly notetaking automator and parser.",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "repository": {
         "type": "git",
         "url": "https://github.com/Atarity/Todomator.git"
@@ -17,7 +17,8 @@
     "activationEvents": [
         "onCommand:tdm.newEntry",
         "onCommand:tdm.showStats",
-        "onCommand:tdm.markAsDone"
+        "onCommand:tdm.markAsDone",
+        "onCommand:tdm.setup"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -34,22 +35,9 @@
             {
                 "title": "Directory with notes",
                 "properties": {
-                    "tdm.homeDirMac": {
+                    "tdm.homeDir": {
                         "type": "string",
-                        "scope": "resource",
-                        "default": "/Seredkin/Notes/",
-                        "description": "POSIX path to the directory with Todomator's notes."
-                    },
-                    "tdm.homeDirWin": {
-                        "type": "string",
-                        "scope": "resource",
-                        "default": "C:/Seredkin/Notes/",
-                        "description": "POSIX path (back-slashed for Windows) to the directory with Todomator's notes."
-                    },
-                    "tdm.homeDirLinux": {
-                        "type": "string",
-                        "scope": "resource",
-                        "default": "/Seredkin/Notes/",
+                        "default": "",
                         "description": "POSIX path to the directory with Todomator's notes."
                     }
                 }
@@ -64,6 +52,11 @@
             {
                 "command": "tdm.showStats",
                 "title": "Show statistics",
+                "category": "Todomator"
+            },
+            {
+                "command": "tdm.setup",
+                "title": "Run setup",
                 "category": "Todomator"
             }
         ],
