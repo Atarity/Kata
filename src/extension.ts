@@ -3,6 +3,7 @@ const setupTodomator = require('./setupTodomator');
 const newEntry = require('./newEntry');
 const showStats = require('./showStats');
 const markAsDone = require('./markAsDone');
+const listTags = require('./listTags');
 
 export function activate(context: vscode.ExtensionContext) {
     // Create a new entry
@@ -16,6 +17,10 @@ export function activate(context: vscode.ExtensionContext) {
     // Mark task as done
     let newMarkAsDoneDisposable = vscode.commands.registerCommand('tdm.markAsDone', markAsDone);
     context.subscriptions.push(newMarkAsDoneDisposable);
+
+    // List tags
+    let listTagsDisposable = vscode.commands.registerCommand('tdm.listTags', listTags);
+    context.subscriptions.push(listTagsDisposable);
 
     // Run setup
     let setupDisposable = vscode.commands.registerCommand('tdm.setup', setupTodomator);

@@ -18,6 +18,7 @@
         "onCommand:tdm.newEntry",
         "onCommand:tdm.showStats",
         "onCommand:tdm.markAsDone",
+        "onCommand:tdm.listTags",
         "onCommand:tdm.setup"
     ],
     "main": "./out/extension",
@@ -46,12 +47,17 @@
         "commands": [
             {
                 "command": "tdm.newEntry",
-                "title": "New Entry",
+                "title": "New entry",
                 "category": "Todomator"
             },
             {
                 "command": "tdm.showStats",
                 "title": "Show statistics",
+                "category": "Todomator"
+            },
+            {
+                "command": "tdm.listTags",
+                "title": "List tags",
                 "category": "Todomator"
             },
             {
@@ -84,5 +90,9 @@
         "@types/node": "^7.0.43",
         "typescript": "^2.6.1",
         "vscode": "^1.1.28"
+    },
+    "dependencies": {
+        "gray-matter": "^4.0.2",
+        "klaw": "^3.0.0"
     }
 }

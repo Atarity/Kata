@@ -72,7 +72,6 @@ module.exports = async () => {
     // Open new file and move coursor
     const fileUri = vscode.Uri.file(filePath);  // OR uri.parse ("file:" + filePath)
     vscode.workspace.openTextDocument(fileUri).then(document => {
-        const edit = new vscode.WorkspaceEdit();
         vscode.window.showTextDocument(document).then(success => {
             if (success) {
                 vscode.window.activeTextEditor.selection = new vscode.Selection(new vscode.Position(5, 0), new vscode.Position(5, 0));

@@ -6,7 +6,7 @@ module.exports = () => {
     const config = vscode.workspace.getConfiguration('tdm');
     const homeDirectory = String(config.get('homeDir'));
     if (homeDirectory == null || !homeDirectory) {
-        vscode.window.showErrorMessage('Default note folder not found. Please run setup.');
+        vscode.window.showErrorMessage('Todomator: Default note folder not found. Please run setup.');
         return;
     }
     const includes = ["**/*"];
@@ -28,7 +28,7 @@ module.exports = () => {
                         rest += 1;
                     }
                 }
-                vscode.window.showInformationMessage(`in ${ homeDirectory } workspace: Total files = ${ filePathes.length }. MD files = ${ md }. Other files = ${ rest }`);
+                vscode.window.showInformationMessage(`Todomator: Total files = ${ filePathes.length }. MD files = ${ md }. Other files = ${ rest }`);
             })
             .catch((reason: string) => {
                 vscode.window.showErrorMessage(`Todomator: Error has occurred.`, reason);
