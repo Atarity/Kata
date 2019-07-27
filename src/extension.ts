@@ -93,7 +93,6 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("tdm.markAsDone", () => {
         const editor = vscode.window.activeTextEditor;
         let curs = editor.selection.active; // returns Position (line, char)
-        // console.log(`Cursor line is ${curs.line} and char is ${curs.character}`);
         var currLine = editor.document.getText(new vscode.Range(curs.line, 0, curs.line + 1, 0));
         var tdLine = currLine.trim().substr(0,6);
         var tdMarks = ['- [  ]', '- [ ]', '- []', '- [X]', '- [x]', '- [Х]', '- [х]'];
