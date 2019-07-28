@@ -17,10 +17,16 @@ module.exports = () => {
 
     createTagIndex(homeDirectory)
         .then(tags => {
-            vscode.window.showQuickPick(Object.keys(tags))
+            const quickPickItems = Object.keys(tags).map(tagName => {
+                return {
+                    label: tagName,
+                    description: String(tags[tagName].length)
+                };
+            });
+            vscode.window.showQuickPick(quickPickItems)
                 .then(tag => {
                     if (tag != null) {
-                        const shortPaths = tags[tag].map((item) => {
+                        const shortPaths = tags[tag.label].map((item) => {
                             return item.slice(homeDirectoryLen + 1, item.length);
                         });
                         vscode.window.showQuickPick(shortPaths)

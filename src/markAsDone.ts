@@ -18,7 +18,7 @@ module.exports = () => {
             }
             currLineText = currLineText.trim();
             editor.edit(editBuilder => {
-                editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), `- [ ] ${ currLineText }`); 
+                editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), `- [ ] ${ currLineText }`);
             });
         // if it is todo and need to set X     
         } else if (tdLine.indexOf(tdMarks[i]) != -1 && i < 3) {
