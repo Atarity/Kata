@@ -26,6 +26,8 @@ module.exports = () => {
             editor.edit(editBuilder => {
                 editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), `- [X] ~~${ currLineText }~~`); 
             });
+            const postion = editor.selection.end; 
+            editor.selection = new vscode.Selection(postion, postion);
         // if it is not a todo line, make it so
         } else if (tdLine.indexOf(tdMarks[i]) < 0 && i == 0) {
             const currLineText = currLine.trim();
