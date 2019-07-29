@@ -37,7 +37,8 @@ module.exports = async () => {
         vscode.window.showErrorMessage('Todomator: Default note folder not found. Please run setup.');
         return;
     }
-    homeDirectory = homeDirectory.split('=')[1];      
+    homeDirectory = homeDirectory.split('=')[1];
+    
     const datetime = toLocalTime().toISOString().slice(0,10);
     const fileName = await vscode.window.showInputBox({prompt: "Edit Entry's filename", value: datetime + "-todo.md", valueSelection: [11, 15]});
     let yearDir;

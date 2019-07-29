@@ -14,6 +14,7 @@ module.exports = () => {
         return;
     }
     homeDirectory = homeDirectory.split('=')[1];
+    
     const includes = ["**/*"];
     const excludes = [];
     vscode.workspace.findFiles(`{${ includes.join(',') }}`, `{${ excludes.join(',') }}`)
