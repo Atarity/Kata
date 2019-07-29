@@ -14,12 +14,13 @@ export function listTags() {
 
     createTagIndex(homeDirectory)
         .then(tags => {
-            const quickPickItems = Object.keys(tags).map(tagName => {
+            let quickPickItems = Object.keys(tags).map(tagName => {
                 return {
                     label: tagName,
                     description: String(tags[tagName].length)
                 };
             });
+            quickPickItems = quickPickItems.sort((a, b) => Number(b.description) - Number(a.description));
             vscode.window.showQuickPick(quickPickItems)
                 .then(tag => {
                     if (tag != null) {
