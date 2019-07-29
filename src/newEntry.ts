@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import * as os from "os";
+import { getHomeDir, setHomeDir } from "./settings";
 
 // Transform filename from userinput to Title without dashes
 function fileToTitle(fileName) {
@@ -26,19 +26,13 @@ const isValid = (() => {
     }
 })();
 
-module.exports = async () => {
-    // TODO: Take out get home directory code to utils.ts
-    const config = vscode.workspace.getConfiguration('tdm');
-    const homeDirParam = String(config.get('homeDir'));        
-    const homeDirArray = homeDirParam.split(';');
-    const hostname = os.hostname();
-    let homeDirectory = homeDirArray.find(element => element.indexOf(hostname) !== -1);
-    if (homeDirectory == null || !homeDirectory) {
-        vscode.window.showErrorMessage('Todomator: Default note folder not found. Please run setup.');
+export async function newEntry() {
+    const homeDirectory = getHomeDir();
+    if (!homeDirectory) {
+        setHomeDir();
         return;
     }
-    homeDirectory = homeDirectory.split('=')[1];
-    
+
     const datetime = toLocalTime().toISOString().slice(0,10);
     const fileName = await vscode.window.showInputBox({prompt: "Edit Entry's filename", value: datetime + "-todo.md", valueSelection: [11, 15]});
     let yearDir;

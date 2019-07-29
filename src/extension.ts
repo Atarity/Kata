@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
-const setupTodomator = require('./setupTodomator');
-const newEntry = require('./newEntry');
-const showStats = require('./showStats');
-const markAsDone = require('./markAsDone');
-const listTags = require('./listTags');
+import { newEntry } from './newEntry';
+import { showStats } from './showStats';
+import { markAsDone } from './markAsDone';
+import { listTags } from './listTags';
+import { setup } from './settings';
 
 export function activate(context: vscode.ExtensionContext) {
     // Create a new entry
@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(listTagsDisposable);
 
     // Run setup
-    let setupDisposable = vscode.commands.registerCommand('tdm.setup', setupTodomator);
+    let setupDisposable = vscode.commands.registerCommand('tdm.setup', setup);
     context.subscriptions.push(setupDisposable);
 }
 

@@ -3,22 +3,14 @@ import * as path from "path";
 import * as fs from "fs";
 import * as klaw from "klaw";
 import * as matter from "gray-matter";
-import * as os from "os";
+import { getHomeDir, setHomeDir } from "./settings";
 
-module.exports = () => {
-    // TODO: Take out get home directory code to utils.ts
-    const config = vscode.workspace.getConfiguration('tdm');
-    const homeDirParam = String(config.get('homeDir'));        
-    const homeDirArray = homeDirParam.split(';');
-    const hostname = os.hostname();
-    let homeDirectory = homeDirArray.find(element => element.indexOf(hostname) !== -1);
-    if (homeDirectory == null || !homeDirectory) {
-        vscode.window.showErrorMessage('Todomator: Default note folder not found. Please run setup.');
+export function listTags() {
+    const homeDirectory = getHomeDir();
+    if (!homeDirectory) {
+        setHomeDir();
         return;
     }
-    homeDirectory = homeDirectory.split('=')[1];
-
-    const homeDirectoryLen = homeDirectory.length;
 
     createTagIndex(homeDirectory)
         .then(tags => {
@@ -32,7 +24,7 @@ module.exports = () => {
                 .then(tag => {
                     if (tag != null) {
                         const shortPaths = tags[tag.label].map((item) => {
-                            return item.slice(homeDirectoryLen + 1, item.length);
+                            return item.slice(homeDirectory.length + 1, item.length);
                         });
                         vscode.window.showQuickPick(shortPaths)
                             .then(chosenShortPath => {

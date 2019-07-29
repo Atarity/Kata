@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-module.exports = () => {
+export function markAsDone() {
     const editor = vscode.window.activeTextEditor;
     let curs = editor.selection.active; // returns Position (line, char)
     var currLine = editor.document.getText(new vscode.Range(curs.line, 0, curs.line + 1, 0));

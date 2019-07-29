@@ -34,12 +34,23 @@
         ],
         "configuration": [
             {
-                "title": "Directory with notes",
+                "type": "object",
+                "title": "Todomator configuration",
                 "properties": {
                     "tdm.homeDir": {
-                        "type": "string",
-                        "default": "",
-                        "description": "POSIX path to the directory with Todomator's notes."
+                        "type": "array",
+                        "description": "Path to the directory with Todomator's notes.",
+                        "default": [],
+                        "items": {
+                            "hostname": {
+                                "type": "string",
+                                "description": "Computer name"
+                            },
+                            "path": {
+                                "type": "string",
+                                "description": "Local path to notes directory"
+                            }
+                        }
                     }
                 }
             }
@@ -89,7 +100,7 @@
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
         "typescript": "^2.6.1",
-        "vscode": "^1.1.28"
+        "vscode": "^1.1.35"
     },
     "dependencies": {
         "gray-matter": "^4.0.2",
