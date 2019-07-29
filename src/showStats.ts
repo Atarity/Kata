@@ -1,14 +1,19 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import * as os from "os";
 
 module.exports = () => {
     // TODO: Take out get home directory code to utils.ts
     const config = vscode.workspace.getConfiguration('tdm');
-    const homeDirectory = String(config.get('homeDir'));
+    const homeDirParam = String(config.get('homeDir'));        
+    const homeDirArray = homeDirParam.split(';');
+    const hostname = os.hostname();
+    let homeDirectory = homeDirArray.find(element => element.indexOf(hostname) !== -1);
     if (homeDirectory == null || !homeDirectory) {
         vscode.window.showErrorMessage('Todomator: Default note folder not found. Please run setup.');
         return;
     }
+    homeDirectory = homeDirectory.split('=')[1];
     const includes = ["**/*"];
     const excludes = [];
     vscode.workspace.findFiles(`{${ includes.join(',') }}`, `{${ excludes.join(',') }}`)

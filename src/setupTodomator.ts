@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import * as os from "os";
 
 module.exports = () => {
   const msg = 'Welcome to Todomator. To begin, choose a location to save your notes. Click Start to continue ->';
@@ -19,8 +20,17 @@ module.exports = () => {
         uriPromise
           .then(res => {
             if (res.length > 0 && res[0].fsPath) {
-              const noteFolder = vscode.workspace.getConfiguration('tdm');
-              const update = noteFolder.update('homeDir', path.normalize(res[0].fsPath), true);
+              const config = vscode.workspace.getConfiguration('tdm');
+              const homeDirParam = String(config.get('homeDir'));        
+              const homeDirArray = homeDirParam.split(';');
+              const hostname = os.hostname();
+              const homeDirectoryIndex = homeDirArray.findIndex(element => element.indexOf(hostname) !== -1);
+              if (homeDirectoryIndex == -1) {
+                homeDirArray.push(`${ hostname }=${ path.normalize(res[0].fsPath) };`);
+              } else {
+                homeDirArray[homeDirectoryIndex] = `${ hostname }=${ path.normalize(res[0].fsPath) };`;
+              }
+              const update = config.update('homeDir', homeDirArray.join(""), true);
               update.then(() => {
                 vscode.window.showInformationMessage('Note path saved. Edit the location by re-running setup or editing the path in VS Code Settings.');
               });
