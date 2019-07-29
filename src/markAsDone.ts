@@ -17,23 +17,30 @@ module.exports = () => {
                 currLineText = currLineText.split('~~')[1];    
             }
             currLineText = currLineText.trim();
+            const newLineText = `- [ ] ${ currLineText }`;
             editor.edit(editBuilder => {
-                editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), `- [ ] ${ currLineText }`);
+                editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), newLineText);
             });
+            const lineRange = new vscode.Range(curs.line, 0, curs.line, newLineText.length);
+            editor.selection = new vscode.Selection(lineRange.end, lineRange.end);
         // if it is todo and need to set X     
         } else if (tdLine.indexOf(tdMarks[i]) != -1 && i < 3) {
             const currLineText = currLine.split(tdMarks[i])[1].trim();
+            const newLineText = `- [X] ~~${ currLineText }~~`;
             editor.edit(editBuilder => {
-                editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), `- [X] ~~${ currLineText }~~`); 
+                editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), newLineText); 
             });
-            const postion = editor.selection.end; 
-            editor.selection = new vscode.Selection(postion, postion);
+            const lineRange = new vscode.Range(curs.line, 0, curs.line, newLineText.length);
+            editor.selection = new vscode.Selection(lineRange.end, lineRange.end);
         // if it is not a todo line, make it so
         } else if (tdLine.indexOf(tdMarks[i]) < 0 && i == 0) {
             const currLineText = currLine.trim();
+            const newLineText = `- [ ] ${ currLineText }`;
             editor.edit(editBuilder => {
-                editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), `- [ ] ${ currLineText }`);
+                editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLine.length), newLineText);
             });
+            const lineRange = new vscode.Range(curs.line, 0, curs.line, newLineText.length);
+            editor.selection = new vscode.Selection(lineRange.end, lineRange.end);
         }
     }
 }
