@@ -51,6 +51,33 @@ export function listTags() {
         })
 }
 
+/*
+export function tagsForCompletion(): Promise<Array<vscode.CompletionItem>> {
+    const homeDirectory = getHomeDir();
+    if (!homeDirectory) {
+        setHomeDir();
+        return;
+    }
+
+    return new Promise((resolve, reject) => {
+        let quickPickItems = [];
+
+        createTagIndex(homeDirectory)
+            .then(tags => {
+                Object.keys(tags).forEach(tagName => {
+                    const simpleCompletion = new vscode.CompletionItem(String(tagName), vscode.CompletionItemKind.Text);
+                    simpleCompletion.command
+                    quickPickItems.push(simpleCompletion);
+                });
+                resolve(quickPickItems);
+            })
+            .catch(err => {
+                reject(`Todomator: ${ err }`);
+            })
+    })
+}
+*/
+
 // Given a folder path, traverse and find all markdown files.
 // Open and grab tags from front matter.
 function createTagIndex(noteFolderPath) {

@@ -100,7 +100,7 @@
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
         "typescript": "^2.6.1",
-        "vscode": "^1.1.35"
+        "vscode": "^1.1.28"
     },
     "dependencies": {
         "gray-matter": "^4.0.2",
