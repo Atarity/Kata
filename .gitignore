@@ -3,4 +3,5 @@ node_modules
 .vscode-test/
 .vscode/
 *.log
+package-lock.json
 .DS_Store
