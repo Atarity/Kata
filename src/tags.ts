@@ -14,6 +14,7 @@ export function filterByTags() {
 
     createTagIndex(homeDirectory)
         .then(tags => {
+            tags = Object.keys(tags).sort().reduce((r, k) => (r[k] = tags[k], r), {});
             let pickItems = Object.keys(tags).map(tagName => {
                 return {
                     label: tagName,
