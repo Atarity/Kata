@@ -14,13 +14,14 @@ export function filterByTags() {
 
     createTagIndex(homeDirectory)
         .then(tags => {
-            tags = Object.keys(tags).sort().reduce((r, k) => (r[k] = tags[k], r), {});
+            //tags = Object.keys(tags).sort().reduce((r, k) => (r[k] = tags[k], r), {});
             let pickItems = Object.keys(tags).map(tagName => {
                 return {
                     label: tagName,
                     description: String(tags[tagName].length)
                 };
             });
+            pickItems = pickItems.sort((a, b) => (String(a.label).toLocaleLowerCase() > String(b.label).toLocaleLowerCase()) ? 1 : ((String(b.label).toLocaleLowerCase() > String(a.label).toLocaleLowerCase()) ? -1 : 0)); 
             pickItems = pickItems.sort((a, b) => Number(b.description) - Number(a.description));
             vscode.window.showQuickPick(pickItems)
                 .then(tag => {
