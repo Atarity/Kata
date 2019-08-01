@@ -1,7 +1,7 @@
 out
 node_modules
 .vscode-test/
-.vscode/
+.vscode/settings.json
 *.log
 package-lock.json
 .DS_Store
