@@ -15,10 +15,11 @@
         "Other"
     ],
     "activationEvents": [
+        "onLanguage:markdown",        
         "onCommand:tdm.newEntry",
         "onCommand:tdm.showStats",
         "onCommand:tdm.markAsDone",
-        "onCommand:tdm.listTags",
+        "onCommand:tdm.filterByTags",
         "onCommand:tdm.setup"
     ],
     "main": "./out/extension",
@@ -67,8 +68,8 @@
                 "category": "Todomator"
             },
             {
-                "command": "tdm.listTags",
-                "title": "List tags",
+                "command": "tdm.filterByTags",
+                "title": "Filter notes by tags",
                 "category": "Todomator"
             },
             {

@@ -65,7 +65,7 @@ export async function newEntry() {
     stream.once('open', function(fd) {
         stream.write("---\n");
         stream.write("title: " + fileToTitle(fileName) + "\n");
-        stream.write("tags: []\n");
+        stream.write("tags: [ ]\n");
         stream.write("---\n\n");
         stream.end();
     });

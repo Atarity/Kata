@@ -5,7 +5,7 @@ import * as klaw from "klaw";
 import * as matter from "gray-matter";
 import { getHomeDir, setHomeDir } from "./settings";
 
-export function listTags() {
+export function filterByTags() {
     const homeDirectory = getHomeDir();
     if (!homeDirectory) {
         setHomeDir();
@@ -14,14 +14,14 @@ export function listTags() {
 
     createTagIndex(homeDirectory)
         .then(tags => {
-            let quickPickItems = Object.keys(tags).map(tagName => {
+            let pickItems = Object.keys(tags).map(tagName => {
                 return {
                     label: tagName,
                     description: String(tags[tagName].length)
                 };
             });
-            quickPickItems = quickPickItems.sort((a, b) => Number(b.description) - Number(a.description));
-            vscode.window.showQuickPick(quickPickItems)
+            pickItems = pickItems.sort((a, b) => Number(b.description) - Number(a.description));
+            vscode.window.showQuickPick(pickItems)
                 .then(tag => {
                     if (tag != null) {
                         const shortPaths = tags[tag.label].map((item) => {
@@ -51,8 +51,7 @@ export function listTags() {
         })
 }
 
-/*
-export function tagsForCompletion(): Promise<Array<vscode.CompletionItem>> {
+export function tagsForIntelliSense(): Promise<Array<vscode.CompletionItem>> {
     const homeDirectory = getHomeDir();
     if (!homeDirectory) {
         setHomeDir();
@@ -60,23 +59,22 @@ export function tagsForCompletion(): Promise<Array<vscode.CompletionItem>> {
     }
 
     return new Promise((resolve, reject) => {
-        let quickPickItems = [];
-
+        let pickItems: Array<vscode.CompletionItem> = [];
         createTagIndex(homeDirectory)
-            .then(tags => {
+            .then(tags => {                
                 Object.keys(tags).forEach(tagName => {
                     const simpleCompletion = new vscode.CompletionItem(String(tagName), vscode.CompletionItemKind.Text);
-                    simpleCompletion.command
-                    quickPickItems.push(simpleCompletion);
+                    simpleCompletion.insertText = `${String(tagName)}, `;
+                    simpleCompletion.sortText = String(tagName).toUpperCase();
+                    pickItems.push(simpleCompletion);
                 });
-                resolve(quickPickItems);
+                resolve(pickItems);
             })
             .catch(err => {
                 reject(`Todomator: ${ err }`);
             })
     })
 }
-*/
 
 // Given a folder path, traverse and find all markdown files.
 // Open and grab tags from front matter.
