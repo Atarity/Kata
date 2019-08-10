@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import { getHomeDir, setHomeDir } from "./settings";
+import { getHomeDir, setHomeDir } from "./utils";
 
 // Transform filename from userinput to Title without dashes
 function fileToTitle(fileName) {

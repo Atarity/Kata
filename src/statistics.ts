@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { getHomeDir, setHomeDir } from "./settings";
+import { getHomeDir, setHomeDir } from "./utils";
 
 export async function showStats() {
     const homeDirectory = getHomeDir();

@@ -3,7 +3,7 @@ import { newEntry } from './sheets';
 import { showStats } from './statistics';
 import { toggleTask } from './tasks';
 import { filterByTags, tagsForIntelliSense } from './tags';
-import { setup } from './settings';
+import { setup, setTagIndex } from './utils';
 
 export function activate(context: vscode.ExtensionContext) {
     // Create a new entry
@@ -19,8 +19,16 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(newMarkAsDoneDisposable);
 
     // Filter notes by tags
-    let listTagsDisposable = vscode.commands.registerCommand('tdm.filterByTags', filterByTags);
-    context.subscriptions.push(listTagsDisposable);
+    let filterTagsDisposable = vscode.commands.registerCommand('tdm.filterByTags', filterByTags);
+	context.subscriptions.push(filterTagsDisposable);
+	
+	// Run setup
+    let setupDisposable = vscode.commands.registerCommand('tdm.setup', setup);
+	context.subscriptions.push(setupDisposable);
+	
+	// Rebuild tag index
+	let tagIndexDisposable = vscode.commands.registerCommand('tdm.setTagIndex', setTagIndex);
+	context.subscriptions.push(tagIndexDisposable);
 
 	// Show tags in IntelliSense
 	const triggerCharacters = [...'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'];
@@ -38,9 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 	context.subscriptions.push(tagProvider);
 
-	// Run setup
-    let setupDisposable = vscode.commands.registerCommand('tdm.setup', setup);
-    context.subscriptions.push(setupDisposable);
+	setTagIndex(); 
 }
 
 // this method is called when your extension is deactivated

@@ -15,12 +15,13 @@
         "Other"
     ],
     "activationEvents": [
-        "onLanguage:markdown",        
+        "onLanguage:markdown",
         "onCommand:tdm.newEntry",
         "onCommand:tdm.showStats",
         "onCommand:tdm.markAsDone",
         "onCommand:tdm.filterByTags",
-        "onCommand:tdm.setup"
+        "onCommand:tdm.setup",
+        "onCommand:tdm.rebuildTagIndex"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -52,6 +53,10 @@
                                 "description": "Local path to notes directory"
                             }
                         }
+                    },
+                    "tdm.tagIndex": {
+                        "type": "object",
+                        "description": "Todomator's tag index."
                     }
                 }
             }
@@ -75,6 +80,11 @@
             {
                 "command": "tdm.setup",
                 "title": "Run setup",
+                "category": "Todomator"
+            },
+            {
+                "command": "tdm.setTagIndex",
+                "title": "Rebuild tag index",
                 "category": "Todomator"
             }
         ],
@@ -104,7 +114,7 @@
         "vscode": "^1.1.28"
     },
     "dependencies": {
-        "gray-matter": "^4.0.2",
-        "klaw": "^3.0.0"
+        "@types/klaw": "^3.0.0",
+        "gray-matter": "^4.0.2"
     }
 }
