@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { getHomeDir, setHomeDir } from "./utils";
+import { getHomeDir, setHomeDir, getTagIndex } from "./utils";
 
 export async function showStats() {
     const homeDirectory = getHomeDir();
@@ -34,4 +34,32 @@ export async function showStats() {
                 vscode.window.showErrorMessage(`Todomator: Error has occurred.`, reason);
             });
         });
+}
+
+export function getStats(): string {
+    let stat: string = "";
+
+    stat = stat.concat("# Todomator's sctatistics\n");
+    stat = stat.concat("## Files\n");
+
+    stat = stat.concat("## Tags\n");
+    let tags = Object(getTagIndex());
+    tags = Object.keys(tags).map(tagName => {
+        return {
+            label: tagName,
+            description: tags[tagName].length
+        };
+    });
+    tags = tags.sort((a, b) => {
+        const strA = String(a.label).toLocaleLowerCase();
+        const strB = String(b.label).toLocaleLowerCase();
+        return strA.localeCompare(strB);
+    });
+            
+    tags = tags.sort((a, b) => Number(b.description) - Number(a.description));
+    tags.forEach(item => {
+        stat = stat.concat(`- ${item.label}: ${item.description}\n`);
+    })
+    
+    return stat;
 }

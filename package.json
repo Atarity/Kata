@@ -2,7 +2,7 @@
     "name": "tdm",
     "displayName": "Todomator",
     "description": "Bore-friendly notetaking automator and parser.",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "repository": {
         "type": "git",
         "url": "https://github.com/Atarity/Todomator.git"
@@ -21,7 +21,7 @@
         "onCommand:tdm.markAsDone",
         "onCommand:tdm.filterByTags",
         "onCommand:tdm.setup",
-        "onCommand:tdm.rebuildTagIndex"
+        "onCommand:tdm.setTagIndex"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -114,7 +114,7 @@
         "vscode": "^1.1.28"
     },
     "dependencies": {
-        "@types/klaw": "^3.0.0",
+        "klaw": "^3.0.0",
         "gray-matter": "^4.0.2"
     }
 }
