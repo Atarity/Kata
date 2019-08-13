@@ -1,16 +1,24 @@
 {
     "scopeName": "open-task.injection",
-    "injectionSelector": "L:markup.list",
+    "injectionSelector": "L:markup.list.unnumbered.markdown",
     "patterns": [
-      {
-        "include": "#task-opened"
-      }
+        {
+            "include": "#task-opened"
+        },
+        {
+            "include": "#task-closed"
+        }
     ],
     "repository": {
-      "task-opened": {
-        "begin": "a",
-        "end": "f",
-        "name": "opened.task"
-      }
+        "task-opened": {
+            "begin": "(\\[\\s\\])",
+            "end": "\n",
+            "name": "opnd.tsk"
+        },
+        "task-closed": {
+            "begin": "(\\[X\\])",
+            "end": "\n",
+            "name": "clsd.tsk"            
+        }
     }
 }

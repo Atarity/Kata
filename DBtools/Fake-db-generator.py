@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # The script will generate totally fake database of Notes.
+# Check below variables before usage!
 
 from argparse import ArgumentParser
 from time import sleep
 from faker import Faker
 import os, re, datetime, random
 
-NUM_OF_YEARS = 5
-NUM_OF_NOTES = 1500 # it is better to keep less than 365 Notes per year in variables
+NUM_OF_YEARS = 3
+NUM_OF_NOTES = 10 # it is better to keep less than 365 Notes per year in variables
 MAX_WORDS_IN_FILENAMES = 6
 MAX_TAGS_PER_NOTE = 3
 NUM_OF_DIFF_TAGS = 50 # Number of different tags should always be less than 205
