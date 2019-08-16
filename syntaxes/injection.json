@@ -1,10 +1,7 @@
 {
-    "scopeName": "open-task.injection",
+    "scopeName": "task-state.injection",
     "injectionSelector": "L:markup.list.unnumbered.markdown",
     "patterns": [
-        {
-            "include": "#task-opened"
-        },
         {
             "include": "#task-closed"
         }
@@ -17,7 +14,7 @@
         },
         "task-closed": {
             "begin": "(\\[X\\])",
-            "end": "\n",
+            "end": "\n\n",
             "name": "clsd.tsk"            
         }
     }
