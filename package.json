@@ -24,7 +24,7 @@
         "grammars": [
             {
                 "path": "./syntaxes/injection.json",
-                "scopeName": "open-task.injection",
+                "scopeName": "task-state.injection",
                 "injectTo": ["text.html.markdown"]
             }
         ],
