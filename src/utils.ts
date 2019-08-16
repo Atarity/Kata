@@ -41,7 +41,7 @@ export function setHomeDir() {
           const update = config.update('homeDir', homeDirArray, true);
           update.then(() => {
             vscode.window.showInformationMessage('Todomator: Note path saved. Edit the location by re-running setup or editing the path in VS Code Settings.');
-            setTagIndex();
+            setFilesIndex();
           });
         }
       });
@@ -61,83 +61,120 @@ export function getHomeDir(): string {
   return homeDirArray[homeDirIndex].path;
 }
 
-export function setTagIndex() {
+export function updateFileIndex(filePath: string) {
   const homeDirectory = getHomeDir();
   if (!homeDirectory) {
       return;
   }
 
-  createTagIndex(homeDirectory)
-    .then(tags => {
-      const config = vscode.workspace.getConfiguration('tdm');
-      const update = config.update('tagIndex', tags, true);
-      
-      update.then(() => {
-        vscode.window.showInformationMessage('Todomator: Tag index rebuild.');
+  let files = [];
+
+  const fileContent = readFileContent(filePath);
+  files.push(fileContent);
+
+  Promise.all(files).then(files => {
+    const filesIndex = createFilesIndex(files);
+    const currentFilesIndex = getFilesIndex();
+			
+		Object.keys(filesIndex).map(filePath => {
+		  if (filePath in currentFilesIndex) {
+			  currentFilesIndex[filePath] = filesIndex[filePath];
+			} else {
+			  currentFilesIndex[filePath] = [filesIndex[filePath]];
+			}
+		});
+
+    /*
+    const config = vscode.workspace.getConfiguration('tdm');
+    const update = config.update('filesIndex', currentFilesIndex, true);            
+    update.then(() => {
+      vscode.window.showInformationMessage('Todomator: Files index rebuild.');
+    });
+    */
+    const filePath = path.join(homeDirectory, 'index.json');
+    fs.writeFile(filePath, JSON.stringify(currentFilesIndex), function (err) {
+      if (err) throw err;
+      vscode.window.showInformationMessage('Todomator: Files index rebuild.');
+    });
+  });
+}
+
+
+export function setFilesIndex() {
+  const homeDirectory = getHomeDir();
+  if (!homeDirectory) {
+      return;
+  }
+
+  let files = [];
+
+  klaw(homeDirectory)       
+    .on('data', item => {
+      if (!item.stats.isDirectory()) {
+        const fileContent = readFileContent(item.path);
+        files.push(fileContent);
+      }
+    })
+    .on('error', (err, item) => {
+      vscode.window.showErrorMessage(`Todomator: Error while walking notes folder for tags: ${ item } ${ err }`);
+    })
+    .on('end', () => {
+      Promise.all(files)
+        .then(files => {
+          const filesIndex = createFilesIndex(files);
+          const filePath = path.join(homeDirectory, 'index.json');
+          fs.writeFile(filePath, JSON.stringify(filesIndex), function (err) {
+            if (err) throw err;
+            vscode.window.showInformationMessage('Todomator: Files index rebuild.');
+          });
+        })
+        .catch(err => {
+          vscode.window.showErrorMessage(`Todomator: ${ err }`);
+        })
+    })
+}
+
+export function getFilesIndex(): Object {
+  const homeDirectory = getHomeDir();
+  if (!homeDirectory) {
+    return;
+  }
+
+  const filePath = path.join(homeDirectory, 'index.json');
+  const data = fs.readFileSync(filePath);
+  return JSON.parse(data.toString());
+}
+
+export function readFileContent(filePath: string) {
+  return new Promise((res, rej) => {
+    fs.readFile(filePath, (err, contents) => {
+      if (err) {
+        res();
+      }
+      res({ 
+        path: filePath, 
+        contents: contents 
       });
-      
-    })
-    .catch(err => {
-      vscode.window.showErrorMessage(`Todomator: ${ err }`);
-    })
+    });                      
+  });
 }
 
-export function getTagIndex(): Object {
-  const config = vscode.workspace.getConfiguration('tdm');
-  const tagIndex = config.get('tagIndex');
-  return tagIndex;
-}
-
-function createTagIndex(noteFolderPath: string) {
-  return new Promise((resolve, reject) => {
-      let files = [];
-
-      klaw(noteFolderPath)       
-          .on('data', item => {
-              files.push(new Promise((res, rej) => {
-                  if (!item.stats.isDirectory()) {                        
-                      fs.readFile(item.path, (err, contents) => {
-                          if (err) {
-                              res();
-                          } else {} 
-                              res({ 
-                                  path: item.path, 
-                                  contents: contents 
-                              });
-                          }
-                      );                      
-                  } else {
-                      res(); // resolve undefined
-                  }                    
-              }))
-          })
-          .on('error', (err, item) => {
-              reject(err);
-              vscode.window.showErrorMessage(`Todomator: Error while walking notes folder for tags: ${ item } ${ err }`);
-          })
-          .on('end', () => {
-              Promise.all(files)
-                  .then(files => {
-                      let tagIndex = {};
-                      for (let i = 0; i < files.length; i++) {
-                          if (files[i] != null && files[i]) {
-                              const parsedFrontMatter = matter(files[i].contents);
-                              if ('tags' in parsedFrontMatter.data) {
-                                  for (let tag of parsedFrontMatter.data.tags) {
-                                      if (tag in tagIndex) {
-                                          tagIndex[tag].push(files[i].path);
-                                      } else {
-                                          tagIndex[tag] = [files[i].path];
-                                      }
-                                  }
-                              }
-                          }
-                      }
-                      resolve(tagIndex);
-                  })
-                  .catch(err => {
-                      vscode.window.showErrorMessage(`Todomator: ${ err }`);
-                  })
-          })
-  })
+export function createFilesIndex(files): Object {
+  let filesIndex = {};
+  for (let i = 0; i < files.length; i++) {
+    if (files[i] != null && files[i]) {
+      const filePath = files[i].path;
+      const fileData = matter(files[i].contents).data;
+      if ('tags' in fileData) {
+        for (let tag of fileData.tags) {
+          if (filePath in filesIndex) {
+            filesIndex[filePath].push(tag);
+          } else {
+            filesIndex[filePath] = [tag];
+          }
+        }
+      }
+    }
+  }
+  return filesIndex;  
 }

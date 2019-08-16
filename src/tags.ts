@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { getHomeDir, setHomeDir, getTagIndex } from "./utils";
+import { getHomeDir, setHomeDir, getFilesIndex } from "./utils";
 
 export function filterByTags() {
     const homeDirectory = getHomeDir();
@@ -9,13 +9,25 @@ export function filterByTags() {
         return;
     }
 
-    const tags = getTagIndex();
+    const filesIndex = getFilesIndex();
+    let tags = {};
+    Object.keys(filesIndex).map(filePath => {
+        for (let tag of filesIndex[filePath]) {
+            if (tag in tags) {
+                tags[tag].push(filePath);
+            } else {
+                tags[tag] = [filePath];
+            }
+        }
+    });
+
     let pickItems = Object.keys(tags).map(tagName => {
         return {
             label: tagName,
             description: String(tags[tagName].length)
         };
     });
+
     pickItems = pickItems.sort((a, b) => {
         const strA = String(a.label).toLocaleLowerCase();
         const strB = String(b.label).toLocaleLowerCase();
@@ -56,7 +68,17 @@ export function tagsForIntelliSense(): Promise<Array<vscode.CompletionItem>> {
 
     return new Promise((resolve, reject) => {
         let pickItems: Array<vscode.CompletionItem> = [];
-        const tags = getTagIndex();              
+        const filesIndex = getFilesIndex();
+        let tags = {};
+        Object.keys(filesIndex).map(filePath => {
+            for (let tag of filesIndex[filePath]) {
+                if (tag in tags) {
+                    tags[tag].push(filePath);
+                } else {
+                    tags[tag] = [filePath];
+                }
+            }
+        });             
         Object.keys(tags).forEach(tagName => {
             const simpleCompletion = new vscode.CompletionItem(String(tagName), vscode.CompletionItemKind.Text);
             simpleCompletion.insertText = `${String(tagName)}, `;

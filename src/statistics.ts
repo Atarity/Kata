@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { getHomeDir, setHomeDir, getTagIndex } from "./utils";
+import { getHomeDir, setHomeDir, getFilesIndex } from "./utils";
 
 export async function showStats() {
     const homeDirectory = getHomeDir();
@@ -43,7 +43,9 @@ export function getStats(): string {
     stat = stat.concat("## Files\n");
 
     stat = stat.concat("## Tags\n");
-    let tags = Object(getTagIndex());
+    stat = stat.concat(`Tag|Popularity\n`);
+    stat = stat.concat(`--- | ---\n`)
+    let tags = Object(getFilesIndex());
     tags = Object.keys(tags).map(tagName => {
         return {
             label: tagName,
@@ -58,7 +60,7 @@ export function getStats(): string {
             
     tags = tags.sort((a, b) => Number(b.description) - Number(a.description));
     tags.forEach(item => {
-        stat = stat.concat(`- ${item.label}: ${item.description}\n`);
+        stat = stat.concat(`${item.label} | ${item.description}\n`);
     })
     
     return stat;

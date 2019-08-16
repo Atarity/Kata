@@ -3,22 +3,19 @@ import { newEntry } from './sheets';
 import { getStats } from './statistics';
 import { toggleTask } from './tasks';
 import { filterByTags, tagsForIntelliSense } from './tags';
-import { setup, setTagIndex } from './utils';
+import { setup, setFilesIndex, readFileContent, createFilesIndex, getFilesIndex, updateFileIndex } from './utils';
 
 export function activate(context: vscode.ExtensionContext) {
     // Create a new entry
     let newEntryDisposable = vscode.commands.registerCommand('tdm.newEntry', newEntry);
-    context.subscriptions.push(newEntryDisposable);
+	context.subscriptions.push(newEntryDisposable);	
 
     // Get statistic
-    //let newStatDisposable = vscode.commands.registerCommand('tdm.showStats', showStats);
-	//context.subscriptions.push(newStatDisposable);
 	const virtualDocProvider = new class implements vscode.TextDocumentContentProvider {
 		onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
 		onDidChange = this.onDidChangeEmitter.event;
 	
 		provideTextDocumentContent(uri: vscode.Uri): string {
-			// simply invoke cowsay, use uri-path as text
 			return getStats();
 		}
 	}
@@ -43,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(setupDisposable);
 	
 	// Rebuild tag index
-	let tagIndexDisposable = vscode.commands.registerCommand('tdm.setTagIndex', setTagIndex);
+	let tagIndexDisposable = vscode.commands.registerCommand('tdm.setFilesIndex', setFilesIndex);
 	context.subscriptions.push(tagIndexDisposable);
 
 	// Show tags in IntelliSense
@@ -62,7 +59,13 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 	context.subscriptions.push(tagProvider);
 
-	setTagIndex(); 
+	vscode.workspace.onDidSaveTextDocument(document => {
+		if (document.fileName.endsWith('.md')) {
+			updateFileIndex(document.fileName);
+		} 
+	});
+
+	setFilesIndex();
 }
 
 // this method is called when your extension is deactivated

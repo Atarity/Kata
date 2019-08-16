@@ -21,7 +21,7 @@
         "onCommand:tdm.markAsDone",
         "onCommand:tdm.filterByTags",
         "onCommand:tdm.setup",
-        "onCommand:tdm.setTagIndex"
+        "onCommand:tdm.setFilesIndex"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -53,10 +53,6 @@
                                 "description": "Local path to notes directory"
                             }
                         }
-                    },
-                    "tdm.tagIndex": {
-                        "type": "object",
-                        "description": "Todomator's tag index."
                     }
                 }
             }
@@ -83,8 +79,8 @@
                 "category": "Todomator"
             },
             {
-                "command": "tdm.setTagIndex",
-                "title": "Rebuild tag index",
+                "command": "tdm.setFilesIndex",
+                "title": "Rebuild files index",
                 "category": "Todomator"
             }
         ],
