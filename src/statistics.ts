@@ -45,21 +45,36 @@ export function getStats(): string {
     stat = stat.concat("## Tags\n");
     stat = stat.concat(`Tag|Popularity\n`);
     stat = stat.concat(`--- | ---\n`)
-    let tags = Object(getFilesIndex());
+    
+    const filesIndex = getFilesIndex();
+    let tags = {};
+    Object.keys(filesIndex).map(filePath => {
+        for (let tag of filesIndex[filePath]) {
+            if (tag in tags) {
+                tags[tag].push(filePath);
+            } else {
+                tags[tag] = [filePath];
+            }
+        }
+    });
+
     tags = Object.keys(tags).map(tagName => {
         return {
             label: tagName,
             description: tags[tagName].length
         };
     });
-    tags = tags.sort((a, b) => {
-        const strA = String(a.label).toLocaleLowerCase();
-        const strB = String(b.label).toLocaleLowerCase();
-        return strA.localeCompare(strB);
+
+    tags = Object(tags).sort((a, b) => {
+        if (Number(b.description) === Number(a.description)) {
+            const strA = String(a.label).toLocaleLowerCase();
+            const strB = String(b.label).toLocaleLowerCase();
+            return strA.localeCompare(strB);            
+         }
+         return Number(b.description) - Number(a.description);
     });
-            
-    tags = tags.sort((a, b) => Number(b.description) - Number(a.description));
-    tags.forEach(item => {
+
+    Object(tags).forEach(item => {
         stat = stat.concat(`${item.label} | ${item.description}\n`);
     })
     

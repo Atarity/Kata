@@ -29,16 +29,19 @@ export function filterByTags() {
     });
 
     pickItems = pickItems.sort((a, b) => {
-        const strA = String(a.label).toLocaleLowerCase();
-        const strB = String(b.label).toLocaleLowerCase();
-        return strA.localeCompare(strB);
-    });
-            
-    pickItems = pickItems.sort((a, b) => Number(b.description) - Number(a.description));
+        if (Number(b.description) === Number(a.description)) {
+            const strA = String(a.label).toLocaleLowerCase();
+            const strB = String(b.label).toLocaleLowerCase();
+            return strA.localeCompare(strB);            
+         }
+         return Number(b.description) - Number(a.description);
+    });            
+
     vscode.window.showQuickPick(pickItems).then(tag => {
         if (tag != null) {
             const shortPaths = tags[tag.label].map((item) => {
-                return item.slice(homeDirectory.length + 1, item.length);
+                //return item.slice(homeDirectory.length + 1, item.length);
+                return item;
             });
             vscode.window.showQuickPick(shortPaths).then(chosenShortPath => {
                 if (chosenShortPath != null && chosenShortPath) {

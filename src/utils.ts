@@ -92,7 +92,7 @@ export function updateFileIndex(filePath: string) {
     });
     */
     const filePath = path.join(homeDirectory, 'index.json');
-    fs.writeFile(filePath, JSON.stringify(currentFilesIndex), function (err) {
+    fs.writeFile(filePath, JSON.stringify(currentFilesIndex, null, 2), function (err) {
       if (err) throw err;
       vscode.window.showInformationMessage('Todomator: Files index rebuild.');
     });
@@ -121,9 +121,17 @@ export function setFilesIndex() {
     .on('end', () => {
       Promise.all(files)
         .then(files => {
-          const filesIndex = createFilesIndex(files);
+          let filesIndex = createFilesIndex(files);
+          /*
+          filesIndex = Object(filesIndex).map(item => {
+            return {
+              item.
+              item.slice(homeDirectory.length + 1, item.length);
+            }
+          });
+          */
           const filePath = path.join(homeDirectory, 'index.json');
-          fs.writeFile(filePath, JSON.stringify(filesIndex), function (err) {
+          fs.writeFile(filePath, JSON.stringify(filesIndex, null, 2), function (err) {
             if (err) throw err;
             vscode.window.showInformationMessage('Todomator: Files index rebuild.');
           });
@@ -160,10 +168,12 @@ export function readFileContent(filePath: string) {
 }
 
 export function createFilesIndex(files): Object {
+  const homeDirectory = getHomeDir();
   let filesIndex = {};
   for (let i = 0; i < files.length; i++) {
     if (files[i] != null && files[i]) {
-      const filePath = files[i].path;
+      let filePath = files[i].path;
+      filePath = filePath.slice(homeDirectory.length + 1, filePath.length);
       const fileData = matter(files[i].contents).data;
       if ('tags' in fileData) {
         for (let tag of fileData.tags) {
