@@ -78,8 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
 				return simpleCompletion;
 			});
 		}
-	}, ...triggerCharacters
-	));
+	}, ...triggerCharacters));
 
 	// Show statistic
 	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('Todomator', new class implements vscode.TextDocumentContentProvider {	
