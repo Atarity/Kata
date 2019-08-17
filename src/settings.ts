@@ -4,10 +4,10 @@ import * as os from "os";
 import { TDMHomeDir } from "./classes";
 
 export function setHomeDir() {
-  const msg = 'Welcome to Todomator. To begin, set a location to save your notes. Click Select to continue ->';
-  const option = vscode.window.showInformationMessage(msg, ...['Select']);  
-  option.then(value => {
-    if (value === 'Select') {
+  // const msg = 'Welcome to Todomator. To begin, set a location to save your notes. Click Select to continue ->';
+  // const option = vscode.window.showInformationMessage(msg, ...['Select']);  
+  // option.then(value => {
+  //   if (value === 'Select') {
       // Open a folder picker for user to choose note folder
       const uriPromise = vscode.window.showOpenDialog({
         canSelectFiles: false,
@@ -38,8 +38,8 @@ export function setHomeDir() {
           });
         }
       });
-    }
-  });
+    // }
+  // });
 }
 
 export function getHomeDir(): string {

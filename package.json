@@ -16,10 +16,10 @@
     ],
     "activationEvents": [
         "onLanguage:markdown",
-        "onCommand:tdm.setHomeDir",        
+        "onCommand:tdm.setHomeDir",
         "onCommand:tdm.rebuildIndex",
         "onCommand:tdm.createNote",
-        "onCommand:tdm.toggleTask",        
+        "onCommand:tdm.toggleTask",
         "onCommand:tdm.filterNotesByTag",
         "onCommand:tdm.showStats"
     ],
