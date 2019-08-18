@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 	homeDir = getHomeDir();	
 	if (homeDir) {
 		tdmIndex.setHomeDir(homeDir);
-		tdmIndex.rebuildFilesIndex();
+		tdmIndex.rebuildIndex();
 	}
 
 	// Set home directory
@@ -21,13 +21,16 @@ export function activate(context: vscode.ExtensionContext) {
 		homeDir = getHomeDir();
 		if (homeDir) {
 			await tdmIndex.setHomeDir(homeDir);
-			tdmIndex.rebuildFilesIndex();
+			tdmIndex.rebuildIndex();
 		}
 	}));
 
 	// Rebuild index
 	context.subscriptions.push(vscode.commands.registerCommand('tdm.rebuildIndex', () => {
-		tdmIndex.rebuildFilesIndex();	
+		homeDir = getHomeDir();
+		if (homeDir) {
+			tdmIndex.rebuildIndex();
+		}	
 	}));
 
 	// Update file index when file changed
@@ -53,7 +56,14 @@ export function activate(context: vscode.ExtensionContext) {
 	// Filter notes by tags
 	context.subscriptions.push(vscode.commands.registerCommand('tdm.filterNotesByTag', () => {
 		if (homeDir) {
-			tdmIndex.rebuildTagsIndex();
+			const tdmIndexStatus = tdmIndex.getStatus();
+			if (tdmIndexStatus === "pending") {
+				vscode.window.showInformationMessage('Todomator: Index is building, please try again later...');
+				return;
+			} else if (tdmIndexStatus === "error") {
+				vscode.window.showErrorMessage('Todomator: Error occurred while building index, please try again later...');
+				return;
+			}
 			const tagIndex = tdmIndex.getTagsIndex();
 			filterNotesByTag(homeDir, tagIndex);
 		}
@@ -68,9 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 
-			tdmIndex.rebuildTagsIndex();
 			const tagIndex = tdmIndex.getTagsIndex();
-
 			return tagIndex.map(item => {
 				const simpleCompletion = new vscode.CompletionItem(item.name, vscode.CompletionItemKind.Text);
 				simpleCompletion.insertText = `${item.name}, `;
@@ -83,16 +91,25 @@ export function activate(context: vscode.ExtensionContext) {
 	// Show statistic
 	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('Todomator', new class implements vscode.TextDocumentContentProvider {	
 		provideTextDocumentContent(uri: vscode.Uri): string {
-			tdmIndex.rebuildTagsIndex();
 			const tagIndex = tdmIndex.getTagsIndex();
 			return showStatistic(homeDir, tagIndex);
 		}
 	}));
 	
 	context.subscriptions.push(vscode.commands.registerCommand('tdm.showStats', async () => {
-		let uri = vscode.Uri.parse('Todomator: Statistics.md');
-		let doc = await vscode.workspace.openTextDocument(uri);
-		await vscode.window.showTextDocument(doc, { preview: false });
+		if (homeDir) {
+			const tdmIndexStatus = tdmIndex.getStatus();
+			if (tdmIndexStatus === "pending") {
+				vscode.window.showInformationMessage('Todomator: Index is building, please try again later...');
+				return;
+			} else if (tdmIndexStatus === "error") {
+				vscode.window.showErrorMessage('Todomator: Error occurred while building index, please try again later...');
+				return;
+			}
+			let uri = vscode.Uri.parse('Todomator: Statistics.md');
+			let doc = await vscode.workspace.openTextDocument(uri);
+			await vscode.window.showTextDocument(doc, { preview: false });
+		}
 	}));
 }
 

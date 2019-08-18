@@ -22,11 +22,17 @@ export class TDMIndex {
     private _homeDir: string;
     private _filesIndex: TDMFileIndex[];
     private _tagsIndex: TDMTagIndex[];
+    private _status: string;
   
     constructor() {
         this._homeDir = "";
         this._filesIndex = [];
         this._tagsIndex = [];
+        this._status = "pending";
+    }
+
+    getStatus(): string {
+        return this._status;
     }
   
     setHomeDir(homeDir: string) {
@@ -57,9 +63,11 @@ export class TDMIndex {
         } else {
             this._filesIndex[index] = fileIndex; 
         }
+        this._rebuildTagsIndex();
     }
 
-    rebuildFilesIndex() {
+    private _rebuildFilesIndex() {
+        this._status = "pending";
         this._filesIndex = [];
         const includes = ["**/*.md"];
         const excludes = [];
@@ -72,15 +80,17 @@ export class TDMIndex {
                 filePathes.forEach(filePath => {
                     this.indexFile(filePath);
                 })
+                this._status = "success";
                 console.log(`Todomator: Index rebuilded for ${filePathes.length} files`);  
             })
             .catch((error: string) => {
+                this._status = "error";
                 console.error(`Todomator: ${error}`);
             });
         });
     }
   
-    rebuildTagsIndex() {
+    private _rebuildTagsIndex() {
         this._tagsIndex = [];
         this._filesIndex.map(file => {
             if (!file.tags) {
@@ -97,6 +107,15 @@ export class TDMIndex {
                 }
             })
         })
+    }
+
+    async rebuildIndex() {
+        await this._rebuildFilesIndex();
+        this._rebuildTagsIndex();
+    }
+
+    getFilesIndex(): TDMFileIndex[] {
+        return this._filesIndex;
     }
 
     getTagsIndex(): TDMTagIndex[] {
