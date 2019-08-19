@@ -5,14 +5,42 @@ import { setHomeDir, getHomeDir } from './settings';
 import { createNote, toggleTask } from './notes';
 import { filterNotesByTag, showStatistic } from './ui';
 
+function completionItemProvider(index: TDMIndex) {	
+	const triggerCharacters = [...index.getUniqueCharsFromTags()];
+	return vscode.languages.registerCompletionItemProvider('markdown', {
+		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+			const linePrefix = document.lineAt(position).text.substr(0, position.character);
+			if (!linePrefix.startsWith('tags:')) {
+				return;
+			}
+			const tags = index.getTagsIndex();
+			return tags.map(item => {
+				const simpleCompletion = new vscode.CompletionItem(item.name, vscode.CompletionItemKind.Text);
+				simpleCompletion.insertText = `${item.name}, `;
+				simpleCompletion.sortText = item.name.toUpperCase();
+				return simpleCompletion;
+			});
+		}
+	}, ...triggerCharacters);
+}
+
 export function activate(context: vscode.ExtensionContext) {
-	let homeDir: string;
+	let homeDir: string = getHomeDir();
 	let tdmIndex = new TDMIndex();
-	
-	homeDir = getHomeDir();	
+	let completionItemProviderIndex: number = -1;
+	// TODO: Show message Home dir not found, please run set home directory command
+	// TODO: Notes.ts refactoring
+	// TODO: сделать настройку зачёркивание выполненных тасков
+	// TODO: Show files statistics
 	if (homeDir) {
 		tdmIndex.setHomeDir(homeDir);
-		tdmIndex.rebuildIndex();
+		tdmIndex.rebuildHodeDirIndex().then(() => {
+			// Set tags in IntelliSense
+			if (completionItemProviderIndex !== -1) {
+				context.subscriptions[completionItemProviderIndex].dispose();
+			}
+			completionItemProviderIndex = context.subscriptions.push(completionItemProvider(tdmIndex));
+		});
 	}
 
 	// Set home directory
@@ -20,8 +48,14 @@ export function activate(context: vscode.ExtensionContext) {
 		await setHomeDir();
 		homeDir = getHomeDir();
 		if (homeDir) {
-			await tdmIndex.setHomeDir(homeDir);
-			tdmIndex.rebuildIndex();
+			tdmIndex.setHomeDir(homeDir);
+			tdmIndex.rebuildHodeDirIndex().then(() => {
+				// Set tags in IntelliSense
+				if (completionItemProviderIndex !== -1) {
+					context.subscriptions[completionItemProviderIndex].dispose();
+				}
+				completionItemProviderIndex = context.subscriptions.push(completionItemProvider(tdmIndex));				
+			});
 		}
 	}));
 
@@ -29,7 +63,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('tdm.rebuildIndex', () => {
 		homeDir = getHomeDir();
 		if (homeDir) {
-			tdmIndex.rebuildIndex();
+			tdmIndex.rebuildHodeDirIndex().then(() => {
+				// Set tags in IntelliSense
+				if (completionItemProviderIndex !== -1) {
+					context.subscriptions[completionItemProviderIndex].dispose();
+				}
+				context.subscriptions.push(completionItemProvider(tdmIndex));
+			});
 		}	
 	}));
 
@@ -37,7 +77,13 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.workspace.onDidSaveTextDocument(document => {
 		const filePath: string = document.fileName; 
 		if (path.extname(filePath) === ".md") {
-			tdmIndex.indexFile(filePath);
+			tdmIndex.rebuildFileIndex(filePath).then(() => {
+				// Set tags in IntelliSense
+				if (completionItemProviderIndex !== -1) {
+					context.subscriptions[completionItemProviderIndex].dispose();
+				}
+				completionItemProviderIndex = context.subscriptions.push(completionItemProvider(tdmIndex));
+			});
 		} 
 	});
 
@@ -68,25 +114,6 @@ export function activate(context: vscode.ExtensionContext) {
 			filterNotesByTag(homeDir, tagIndex);
 		}
 	}));
-
-	// Show tags in IntelliSense
-	const triggerCharacters = [...'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'];
-	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('markdown', {
-		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
-			let linePrefix = document.lineAt(position).text.substr(0, position.character);
-			if (!linePrefix.startsWith('tags:')) {
-				return;
-			}
-
-			const tagIndex = tdmIndex.getTagsIndex();
-			return tagIndex.map(item => {
-				const simpleCompletion = new vscode.CompletionItem(item.name, vscode.CompletionItemKind.Text);
-				simpleCompletion.insertText = `${item.name}, `;
-				simpleCompletion.sortText = item.name.toUpperCase();
-				return simpleCompletion;
-			});
-		}
-	}, ...triggerCharacters));
 
 	// Show statistic
 	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('Todomator', new class implements vscode.TextDocumentContentProvider {	

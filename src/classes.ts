@@ -22,12 +22,14 @@ export class TDMIndex {
     private _homeDir: string;
     private _filesIndex: TDMFileIndex[];
     private _tagsIndex: TDMTagIndex[];
+    private _uniqueCharsFromTags: string;
     private _status: string;
   
     constructor() {
         this._homeDir = "";
         this._filesIndex = [];
         this._tagsIndex = [];
+        this._uniqueCharsFromTags = "";
         this._status = "pending";
     }
 
@@ -50,42 +52,56 @@ export class TDMIndex {
         return tags;
     }
 
-    indexFile(filePath: string) {
-        const name = filePath.slice(this._homeDir.length + 1, filePath.length);
-        const tags = this._readFileTags(filePath);
-        const fileIndex: TDMFileIndex = {
-            name: name,
-            tags: tags
-        };
-        const index = this._filesIndex.findIndex(item => item.name === name);
-        if (index === -1) {
-            this._filesIndex.push(fileIndex); 
-        } else {
-            this._filesIndex[index] = fileIndex; 
-        }
-        this._rebuildTagsIndex();
+    rebuildFileIndex(filePath: string): Promise<String> {        
+        this._status = "pending";
+        return new Promise((res, rej) => {
+            if (path.extname(filePath) === ".md") {           
+                const name = filePath.slice(this._homeDir.length + 1, filePath.length);
+                const tags = this._readFileTags(filePath);
+                const fileIndex: TDMFileIndex = {
+                    name: name,
+                    tags: tags
+                };
+                const index = this._filesIndex.findIndex(item => item.name === name);
+                if (index === -1) {
+                    this._filesIndex.push(fileIndex); 
+                } else {
+                    this._filesIndex[index] = fileIndex; 
+                }
+                this._rebuildTagsIndex();
+                this._status = "success";
+                res("success");
+            } else {
+                this._status = "success";
+                const error = "Wrong file extansion.";
+                rej(error);
+            }            
+        });
     }
 
-    private _rebuildFilesIndex() {
+    rebuildHodeDirIndex(): Promise<String> {
         this._status = "pending";
-        this._filesIndex = [];
-        const includes = ["**/*.md"];
-        const excludes = [];
-        vscode.workspace.findFiles(`{${ includes.join(',') }}`, `{${ excludes.join(',') }}`).then((files: vscode.Uri[]) => {
-            new Promise((resolve: (p: string[])=> void, reject: (reason: string) => void) => {
-                const filePathes = files.map(uri => uri.fsPath).filter(p => !path.relative(this._homeDir, p).startsWith('..'));
-                resolve(filePathes);
-            })
-            .then((filePathes: string[]) => {
-                filePathes.forEach(filePath => {
-                    this.indexFile(filePath);
+        return new Promise((res, rej) => {
+            this._filesIndex = [];
+            const includes = ["**/*.md"];
+            const excludes = [];
+            vscode.workspace.findFiles(`{${ includes.join(',') }}`, `{${ excludes.join(',') }}`).then((files: vscode.Uri[]) => {
+                new Promise((resolve: (p: string[])=> void, reject: (reason: string) => void) => {
+                    const filePathes = files.map(uri => uri.fsPath).filter(p => !path.relative(this._homeDir, p).startsWith('..'));
+                    resolve(filePathes);
                 })
-                this._status = "success";
-                console.log(`Todomator: Index rebuilded for ${filePathes.length} files`);  
-            })
-            .catch((error: string) => {
-                this._status = "error";
-                console.error(`Todomator: ${error}`);
+                .then((filePathes: string[]) => {
+                    filePathes.forEach(filePath => {
+                        this.rebuildFileIndex(filePath);
+                    });
+                    this._rebuildTagsIndex();
+                    this._status = "success";
+                    res("success");  
+                })
+                .catch((error: string) => {
+                    this._status = "error";
+                    rej(error);
+                });
             });
         });
     }
@@ -107,11 +123,8 @@ export class TDMIndex {
                 }
             })
         })
-    }
-
-    async rebuildIndex() {
-        await this._rebuildFilesIndex();
-        this._rebuildTagsIndex();
+        const tagsInOneString: string = this._tagsIndex.map(item => item.name).join('');
+        this._uniqueCharsFromTags = String.prototype.concat(...new Set(tagsInOneString));
     }
 
     getFilesIndex(): TDMFileIndex[] {
@@ -120,5 +133,9 @@ export class TDMIndex {
 
     getTagsIndex(): TDMTagIndex[] {
         return this._tagsIndex;
+    }
+
+    getUniqueCharsFromTags(): string {
+        return this._uniqueCharsFromTags;
     }
 }
