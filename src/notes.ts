@@ -87,7 +87,7 @@ export function toggleTask() {
         text = text.trim();
         newLineText = `${ currLineText.substring(0, currLineFirstSymbolsIndex) }- [ ] ${ text }`;
     } else {
-        let text = currLineText;
+        let text = currLineText.replace(/(\r\n|\n|\r)/gm, "");
         newLineText = `${ currLineText.substring(0, currLineFirstSymbolsIndex) }- [ ] ${ text }`;
     }
     
