@@ -2,36 +2,14 @@ import * as vscode from "vscode";
 import * as path from "path";
 import { TDMIndex } from './classes';
 import { setHomeDir, getHomeDir } from './settings';
-import { createNote, toggleTask, toLocalTime } from './notes';
+import { createNote, toggleTask } from './notes';
 import { filterNotesByTag, getStatistic } from './ui';
+import { toLocalTime } from "./utils";
 
 const msg: string[] = [
 	'Todomator: Home directory not found, please run "Set home directory" command'
 	,'Todomator: Index is building, please try again later...'
 	,'Todomator: Error occurred while building index, please try again later...'];
-
-/*
-function formatStringWithZero(str: string): string {
-	return str.length < 2 ? `0${ str }` : str;
-}
-
-function formatDate(date: Date): string {
-	let year = date.getFullYear();
-	let month = String(date.getMonth() + 1);
-	let day = String(date.getDate());
-	let hours = String(date.getHours());
-	let minutes = String(date.getMinutes());
-	let seconds = String(date.getSeconds());
-
-	month = formatStringWithZero(month);
-	day = formatStringWithZero(day);
-	hours = formatStringWithZero(hours);
-	minutes = formatStringWithZero(minutes);
-	seconds = formatStringWithZero(seconds);
-
-    return [year, month, day, hours, minutes, seconds].join('-');
-}
-*/
 
 function addTagsToIntelliSense(tdmIndex: TDMIndex) {	
 	const triggerCharacters = [...tdmIndex.getUniqueCharsFromTags()];
