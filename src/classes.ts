@@ -10,6 +10,7 @@ export interface TDMHomeDir {
 
 export interface TDMFileIndex {
     name: string;
+    createDate: Date;
     tags: string[];
 };
 
@@ -52,14 +53,15 @@ export class TDMIndex {
         return tags;
     }
 
-    rebuildFileIndex(filePath: string): Promise<String> {        
-        this._status = "pending";
+    rebuildFileIndex(filePath: string): Promise<String> {
         return new Promise((res, rej) => {
             if (path.extname(filePath) === ".md") {           
-                const name = filePath.slice(this._homeDir.length + 1, filePath.length);
-                const tags = this._readFileTags(filePath);
+                const name: string = filePath.slice(this._homeDir.length + 1, filePath.length);
+                const createDate: Date = new Date(name.substr(5, 10));
+                const tags: string[] = this._readFileTags(filePath);
                 const fileIndex: TDMFileIndex = {
                     name: name,
+                    createDate: createDate,
                     tags: tags
                 };
                 const index = this._filesIndex.findIndex(item => item.name === name);
@@ -68,13 +70,9 @@ export class TDMIndex {
                 } else {
                     this._filesIndex[index] = fileIndex; 
                 }
-                this._rebuildTagsIndex();
-                this._status = "success";
                 res("success");
             } else {
-                this._status = "success";
-                const error = "Wrong file extansion.";
-                rej(error);
+                rej("Wrong file extension.");
             }            
         });
     }
@@ -94,7 +92,7 @@ export class TDMIndex {
                     filePathes.forEach(filePath => {
                         this.rebuildFileIndex(filePath);
                     });
-                    this._rebuildTagsIndex();
+                    this.rebuildTagsIndex();
                     this._status = "success";
                     res("success");  
                 })
@@ -106,7 +104,7 @@ export class TDMIndex {
         });
     }
   
-    private _rebuildTagsIndex() {
+    rebuildTagsIndex() {
         this._tagsIndex = [];
         this._filesIndex.map(file => {
             if (!file.tags) {
@@ -124,7 +122,7 @@ export class TDMIndex {
             })
         })
         const tagsInOneString: string = this._tagsIndex.map(item => item.name).join('');
-        this._uniqueCharsFromTags = String.prototype.concat(...new Set(tagsInOneString));
+        this._uniqueCharsFromTags = String.prototype.concat(...new Set(tagsInOneString)).replace(" ", "");
     }
 
     getFilesIndex(): TDMFileIndex[] {

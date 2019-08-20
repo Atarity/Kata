@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { TDMTagIndex } from "./classes";
+import { TDMTagIndex, TDMIndex } from "./classes";
 
 export function filterNotesByTag(homeDir: string, tagsIndex: TDMTagIndex[]) {
     let uiItems = tagsIndex.map(item => {
@@ -42,36 +42,52 @@ export function filterNotesByTag(homeDir: string, tagsIndex: TDMTagIndex[]) {
     });
 }
 
-export function showStatistic(homeDir: string, tagsIndex: TDMTagIndex[]): string {
+export function getStatistic(tdmIndex: TDMIndex): string {
     let stat: string = "";
 
     // Files
+    const filesIndex = tdmIndex.getFilesIndex();
     stat = stat.concat("# Todomator's sctatistics\n");
     stat = stat.concat("## Files\n");
+    stat = stat.concat(`Total files in home dir: ${ filesIndex.length.toString() }\n`);
+    stat = stat.concat(`Year|Files\n`);
+    stat = stat.concat(`--- | ---\n`);
+
+    const filesGroupedByYear = filesIndex.reduce((res, item) => {
+        const year = item.createDate.getFullYear();
+        ( res[year] ) ? res[year].files.push(item.name) : res[year] = {
+            files: [item.name]
+        };
+        return res;
+    }, {});
+
+    Object.keys(filesGroupedByYear).map((year) => { 
+        stat = stat.concat(`${ year } | ${ filesGroupedByYear[year].files.length }\n`);
+    });
 
     // Tags
-    stat = stat.concat("## Tags\n");
-    stat = stat.concat(`Tag|Popularity\n`);
-    stat = stat.concat(`--- | ---\n`)
-    
-    let uiItems = tagsIndex.map(item => {
+    const tagsIndex = tdmIndex.getTagsIndex();    
+    let tags = tagsIndex.map(item => {
         return {
-            label: item.name,
-            description: item.files.length.toString()
+            name: item.name,
+            popularity: item.files.length
         };
     });
 
-    uiItems = uiItems.sort((a, b) => {
-        if (Number(b.description) === Number(a.description)) {
-            const strA = a.label.toLocaleLowerCase();
-            const strB = b.label.toLocaleLowerCase();
+    tags = tags.sort((a, b) => {
+        if (b.popularity === a.popularity) {
+            const strA = a.name.toLocaleLowerCase();
+            const strB = b.name.toLocaleLowerCase();
             return strA.localeCompare(strB);            
-         }
-         return Number(b.description) - Number(a.description);
+        }
+        return b.popularity - a.popularity;
     });
-
-    uiItems.forEach(item => {
-        stat = stat.concat(`${item.label} | ${item.description}\n`);
+    
+    stat = stat.concat("## Tags\n");
+    stat = stat.concat(`Tag|Popularity\n`);
+    stat = stat.concat(`--- | ---\n`);
+    tags.forEach(item => {
+        stat = stat.concat(`${ item.name } | ${ item.popularity }\n`);
     });
     
     return stat;
