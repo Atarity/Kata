@@ -63,34 +63,40 @@ export function toggleTask() {
 
     const editor = vscode.window.activeTextEditor;
     const curs = editor.selection.active; // returns Position (line, char)
-    const currLineText: string = editor.document.getText(new vscode.Range(curs.line, 0, curs.line + 1, 0));
+    let currLineText: string = editor.document.getText(new vscode.Range(curs.line, 0, curs.line + 1, 0));
+    currLineText = currLineText.replace(/(\r\n|\n|\r)/gm, "");
+    let curTodoText: string = "";
     const currLineFirstSymbols = currLineText.trim().substr(0,5);
     const currLineFirstSymbolsIndex = currLineText.indexOf(currLineFirstSymbols);
-    
+
     let newLineText: string = "";
+    let newLineStartText: string = (currLineFirstSymbols === "" && currLineText.length > 0) ? currLineText : currLineText.substring(0, currLineFirstSymbolsIndex);
+    let newTodoText: string = "";
+    
     
     const newTaskMarksIndex = newTaskMarks.indexOf(currLineFirstSymbols);
     const doneTaskMarksIndex = doneTaskMarks.indexOf(currLineFirstSymbols);
 
     if (newTaskMarksIndex > -1) {
-        let text = currLineText.split(newTaskMarks[newTaskMarksIndex])[1].trim();
-        if (text) {
-            newLineText = `${ currLineText.substring(0, currLineFirstSymbolsIndex) }- [X] ~~${ text }~~`;
+        curTodoText = currLineText.split(newTaskMarks[newTaskMarksIndex])[1];
+        curTodoText = curTodoText.trim();
+        if (curTodoText) {
+            newTodoText = `- [X] ~~${ curTodoText }~~`;
         }
     } else if (doneTaskMarksIndex > -1) {
-        let text = currLineText.split(doneTaskMarks[doneTaskMarksIndex])[1];
-        const tildaFirstIndex = text.indexOf("~");
-        const tildaLastIndex = text.lastIndexOf("~");
+        curTodoText = currLineText.split(doneTaskMarks[doneTaskMarksIndex])[1];
+        const tildaFirstIndex = curTodoText.indexOf("~");
+        const tildaLastIndex = curTodoText.lastIndexOf("~");
         if (tildaFirstIndex !== -1 && tildaFirstIndex !== tildaLastIndex) {
-            text = text.split('~~')[1];    
+            curTodoText = curTodoText.split('~~')[1];    
         }
-        text = text.trim();
-        newLineText = `${ currLineText.substring(0, currLineFirstSymbolsIndex) }- [ ] ${ text }`;
+        curTodoText = curTodoText.trim();
+        newTodoText = `- [ ] ${ curTodoText }`;
     } else {
-        let text = currLineText.replace(/(\r\n|\n|\r)/gm, "");
-        newLineText = `${ currLineText.substring(0, currLineFirstSymbolsIndex) }- [ ] ${ text }`;
+        newTodoText = `- [ ] `;
     }
     
+    newLineText = `${ newLineStartText }${ newTodoText }`;
     editor.edit(editBuilder => {
         editBuilder.replace(new vscode.Range(curs.line, 0, curs.line, currLineText.length), newLineText);
     });
