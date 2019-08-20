@@ -47,14 +47,17 @@ export function getStatistic(tdmIndex: TDMIndex): string {
 
     // Files
     const filesIndex = tdmIndex.getFilesIndex();
-    stat = stat.concat("# Todomator's sctatistics\n");
+    stat = stat.concat("# Todomator's statistics\n");
     stat = stat.concat("## Files\n");
-    stat = stat.concat(`Total files in home dir: ${ filesIndex.length.toString() }\n`);
+    stat = stat.concat(`Total files in home directory: ${ filesIndex.length.toString() }\n`);
     stat = stat.concat(`Year|Files\n`);
     stat = stat.concat(`--- | ---\n`);
 
-    const filesGroupedByYear = filesIndex.reduce((res, item) => {
-        const year = item.createDate.getFullYear();
+    let filesGroupedByYear = filesIndex.reduce((res, item) => {
+        let year = String(item.createDate.getFullYear());
+        if (!/(\d{4})/.test(year)) {
+            year = "Other";
+        }
         ( res[year] ) ? res[year].files.push(item.name) : res[year] = {
             files: [item.name]
         };

@@ -10,6 +10,29 @@ const msg: string[] = [
 	,'Todomator: Index is building, please try again later...'
 	,'Todomator: Error occurred while building index, please try again later...'];
 
+/*
+function formatStringWithZero(str: string): string {
+	return str.length < 2 ? `0${ str }` : str;
+}
+
+function formatDate(date: Date): string {
+	let year = date.getFullYear();
+	let month = String(date.getMonth() + 1);
+	let day = String(date.getDate());
+	let hours = String(date.getHours());
+	let minutes = String(date.getMinutes());
+	let seconds = String(date.getSeconds());
+
+	month = formatStringWithZero(month);
+	day = formatStringWithZero(day);
+	hours = formatStringWithZero(hours);
+	minutes = formatStringWithZero(minutes);
+	seconds = formatStringWithZero(seconds);
+
+    return [year, month, day, hours, minutes, seconds].join('-');
+}
+*/
+
 function addTagsToIntelliSense(tdmIndex: TDMIndex) {	
 	const triggerCharacters = [...tdmIndex.getUniqueCharsFromTags()];
 	return vscode.languages.registerCompletionItemProvider('markdown', {
@@ -151,9 +174,8 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 			vscode.window.showErrorMessage(msg[2]);
 			return;
 		}
-		const now = new Date();
-		const datetime = `${ now.getFullYear() }-${ now.getMonth() }-${ now.getDay() }-${ now.getHours() }-${ now.getMinutes() }-${ now.getSeconds() }`
-		const uri = vscode.Uri.parse(`${ scheme }: ${ datetime }-stat.md`);		
+		const now = new Date().toISOString().slice(0,19).replace(/:/g, "-");
+		const uri = vscode.Uri.parse(`${ scheme }: ${ now }-stat.md`);
 		let doc = await vscode.workspace.openTextDocument(uri);
 		await vscode.window.showTextDocument(doc, { preview: false });		
 	}));
