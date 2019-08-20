@@ -74,7 +74,9 @@ export function toggleTask() {
 
     if (newTaskMarksIndex > -1) {
         let text = currLineText.split(newTaskMarks[newTaskMarksIndex])[1].trim();
-        newLineText = `${ currLineText.substring(0, currLineFirstSymbolsIndex) }- [X] ~~${ text }~~`;
+        if (text) {
+            newLineText = `${ currLineText.substring(0, currLineFirstSymbolsIndex) }- [X] ~~${ text }~~`;
+        }
     } else if (doneTaskMarksIndex > -1) {
         let text = currLineText.split(doneTaskMarks[doneTaskMarksIndex])[1];
         const tildaFirstIndex = text.indexOf("~");
