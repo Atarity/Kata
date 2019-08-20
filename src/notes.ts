@@ -8,7 +8,7 @@ function fileToTitle(fileName: string): string {
     return result.charAt(0).toUpperCase() + result.replace(/-/g, " ").slice(1);
 }
 
-const toLocalTime = () => {
+export const toLocalTime = () => {
     const d = new Date();
     const offset = (d.getTimezoneOffset() * 60000) * -1;  // Minutes to milliseconds
     const n = new Date(d.getTime() + offset); // Calculate unix-time for local machine

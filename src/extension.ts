@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import { TDMIndex } from './classes';
 import { setHomeDir, getHomeDir } from './settings';
-import { createNote, toggleTask } from './notes';
+import { createNote, toggleTask, toLocalTime } from './notes';
 import { filterNotesByTag, getStatistic } from './ui';
 
 const msg: string[] = [
@@ -174,7 +174,7 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 			vscode.window.showErrorMessage(msg[2]);
 			return;
 		}
-		const now = new Date().toISOString().slice(0,19).replace(/:/g, "-");
+		const now = toLocalTime().toISOString().slice(0,19).replace(/:/g, "-");
 		const uri = vscode.Uri.parse(`${ scheme }: ${ now }-stat.md`);
 		let doc = await vscode.workspace.openTextDocument(uri);
 		await vscode.window.showTextDocument(doc, { preview: false });		
