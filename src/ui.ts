@@ -49,7 +49,7 @@ export function getStatistic(tdmIndex: TDMIndex): string {
     const filesIndex = tdmIndex.getFilesIndex();
     stat = stat.concat("# Todomator's statistics\n");
     stat = stat.concat("## Files\n");
-    stat = stat.concat(`Total files in home directory: ${ filesIndex.length.toString() }\n`);
+    stat = stat.concat(`Total files in ${ tdmIndex.getHomeDir() }: ${ filesIndex.length.toString() }\n`);
     stat = stat.concat(`Year|Files\n`);
     stat = stat.concat(`--- | ---\n`);
 

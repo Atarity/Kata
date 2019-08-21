@@ -63,16 +63,16 @@ export function toggleTask() {
 
     const editor = vscode.window.activeTextEditor;
     const curs = editor.selection.active; // returns Position (line, char)
+
     let currLineText: string = editor.document.getText(new vscode.Range(curs.line, 0, curs.line + 1, 0));
-    currLineText = currLineText.replace(/(\r\n|\n|\r)/gm, "");
-    let curTodoText: string = "";
+    currLineText = currLineText.replace(/(\r\n|\n|\r)/gm, "");    
     const currLineFirstSymbols = currLineText.trim().substr(0,5);
     const currLineFirstSymbolsIndex = currLineText.indexOf(currLineFirstSymbols);
+    let curTodoText: string = "";
 
     let newLineText: string = "";
     let newLineStartText: string = (currLineFirstSymbols === "" && currLineText.length > 0) ? currLineText : currLineText.substring(0, currLineFirstSymbolsIndex);
-    let newTodoText: string = "";
-    
+    let newTodoText: string = "";    
     
     const newTaskMarksIndex = newTaskMarks.indexOf(currLineFirstSymbols);
     const doneTaskMarksIndex = doneTaskMarks.indexOf(currLineFirstSymbols);
@@ -93,7 +93,8 @@ export function toggleTask() {
         curTodoText = curTodoText.trim();
         newTodoText = `- [ ] ${ curTodoText }`;
     } else {
-        newTodoText = `- [ ] `;
+        curTodoText = currLineText.trim()
+        newTodoText = `- [ ] ${ curTodoText }`;
     }
     
     newLineText = `${ newLineStartText }${ newTodoText }`;

@@ -15,13 +15,7 @@
         "Other"
     ],
     "activationEvents": [
-        "onLanguage:markdown",
-        "onCommand:tdm.setHomeDir",
-        "onCommand:tdm.rebuildIndex",
-        "onCommand:tdm.createNote",
-        "onCommand:tdm.toggleTask",
-        "onCommand:tdm.filterNotesByTag",
-        "onCommand:tdm.showStats"
+        "workspaceContains:**/.todomator"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -35,34 +29,28 @@
             }
         ],
         "configuration": [
-            {
-                "type": "object",
-                "title": "Todomator configuration",
-                "properties": {
-                    "tdm.homeDir": {
-                        "type": "array",
-                        "description": "Path to the directory with Todomator's notes.",
-                        "default": [],
-                        "items": {
-                            "hostname": {
-                                "type": "string",
-                                "description": "Computer name"
-                            },
-                            "path": {
-                                "type": "string",
-                                "description": "Local path to notes directory"
-                            }
-                        }
-                    }
-                }
-            }
         ],
+        "menus": {
+            "commandPalette": [
+              {
+                "command": "tdm.rebuildIndex",
+                "when": "editorLangId == markdown"
+              },
+              {
+                "command": "tdm.createNote",
+                "when": "editorLangId == markdown"
+              },
+              {
+                "command": "tdm.filterNotesByTag",
+                "when": "editorLangId == markdown"
+              },
+              {
+                "command": "tdm.showStats",
+                "when": "editorLangId == markdown"
+              }
+            ]
+        },
         "commands": [
-            {
-                "command": "tdm.setHomeDir",
-                "title": "Set home directory",
-                "category": "Todomator"
-            },
             {
                 "command": "tdm.rebuildIndex",
                 "title": "Rebuild index",

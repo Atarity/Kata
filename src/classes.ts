@@ -77,7 +77,7 @@ export class TDMIndex {
         });
     }
 
-    rebuildHodeDirIndex(): Promise<String> {
+    rebuildHomeDirIndex(): Promise<String> {
         this._status = "pending";
         return new Promise((res, rej) => {
             this._filesIndex = [];
