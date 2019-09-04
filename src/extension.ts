@@ -3,7 +3,7 @@ import * as path from "path";
 import { TDMIndex } from './classes';
 import { createNote, toggleTask } from './notes';
 import { filterNotesByTag, getStatistic } from './ui';
-import { toLocalTime } from "./utils";
+import { toLocalTime, getDirsWithTDMFile } from "./utils";
 
 const MSG_INDEX_BUILDING = 'Todomator: Index is building, please try again later...';
 const MSG_INDEX_BUILD_WITH_ERROR = 'Todomator: Error occurred while building index, please try again later...';
@@ -28,9 +28,11 @@ function addTagsToIntelliSense(tdmIndex: TDMIndex) {
 }
 
 export function activate({ subscriptions }: vscode.ExtensionContext) {
-	let homeDir: string = vscode.workspace.workspaceFolders[0].uri.fsPath;
+	let homeDir: string;
 	let tdmIndex = new TDMIndex();
 	let intelliSenseProviderIndex: number = -1;
+	
+	homeDir = getDirsWithTDMFile(vscode.workspace.workspaceFolders[0].uri.fsPath, [])[0];
 
 	// TODO: сделать настройку зачёркивание выполненных тасков
 	tdmIndex.setHomeDir(homeDir);
