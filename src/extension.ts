@@ -7,6 +7,7 @@ import { toLocalTime, getDirsWithTDMFile } from "./utils";
 
 const MSG_INDEX_BUILDING = 'Todomator: Index is building, please try again later...';
 const MSG_INDEX_BUILD_WITH_ERROR = 'Todomator: Error occurred while building index, please try again later...';
+const MSG_NO_TDM_FILE_IN_FOLDER = 'Todomator: File .todomator not found in workspace folder...';
 
 function addTagsToIntelliSense(tdmIndex: TDMIndex) {	
 	const triggerCharacters = [...tdmIndex.getUniqueCharsFromTags()];
@@ -28,24 +29,31 @@ function addTagsToIntelliSense(tdmIndex: TDMIndex) {
 }
 
 export function activate({ subscriptions }: vscode.ExtensionContext) {
+	// TODO: сделать настройку зачёркивание выполненных тасков
 	let homeDir: string;
 	let tdmIndex = new TDMIndex();
 	let intelliSenseProviderIndex: number = -1;
 	
-	homeDir = getDirsWithTDMFile(vscode.workspace.workspaceFolders[0].uri.fsPath, [])[0];
+	homeDir = getDirsWithTDMFile(vscode.workspace.workspaceFolders[0].uri.fsPath, [])[0] || null;
 
-	// TODO: сделать настройку зачёркивание выполненных тасков
-	tdmIndex.setHomeDir(homeDir);
-	tdmIndex.rebuildHomeDirIndex().then(() => {
-		// Set tags in IntelliSense
-		if (intelliSenseProviderIndex !== -1) {
-			subscriptions[intelliSenseProviderIndex].dispose();
-		}
-		intelliSenseProviderIndex = subscriptions.push(addTagsToIntelliSense(tdmIndex));
-	});
+	if (homeDir) {
+		tdmIndex.setHomeDir(homeDir);
+		tdmIndex.rebuildHomeDirIndex().then(() => {
+			// Set tags in IntelliSense
+			if (intelliSenseProviderIndex !== -1) {
+				subscriptions[intelliSenseProviderIndex].dispose();
+			}
+			intelliSenseProviderIndex = subscriptions.push(addTagsToIntelliSense(tdmIndex));
+		});
+	}
 
 	// Rebuild index
 	subscriptions.push(vscode.commands.registerCommand('tdm.rebuildIndex', () => {
+		if (!homeDir) {
+			vscode.window.showErrorMessage(MSG_NO_TDM_FILE_IN_FOLDER);
+			return;
+		}
+
 		tdmIndex.rebuildHomeDirIndex().then(() => {
 			// Set tags in IntelliSense
 			if (intelliSenseProviderIndex !== -1) {
@@ -57,6 +65,10 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 
 	// Update file index when file changed
 	vscode.workspace.onDidSaveTextDocument(document => {
+		if (!homeDir) {
+			return;
+		}
+
 		const filePath: string = document.fileName; 
 		if (path.extname(filePath) === ".md") {
 			tdmIndex.rebuildFileIndex(filePath).then(() => {
@@ -72,16 +84,31 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 
     // Create new note
 	subscriptions.push(vscode.commands.registerCommand('tdm.createNote', () => {
+		if (!homeDir) {
+			vscode.window.showErrorMessage(MSG_NO_TDM_FILE_IN_FOLDER);
+			return;
+		}
+
 		createNote(homeDir);
 	}));
 	
 	// Toggle task
 	subscriptions.push(vscode.commands.registerCommand('tdm.toggleTask', () => {
+		if (!homeDir) {
+			vscode.window.showErrorMessage(MSG_NO_TDM_FILE_IN_FOLDER);
+			return;
+		}
+		
 		toggleTask();
 	}));
 
 	// Filter notes by tags
 	subscriptions.push(vscode.commands.registerCommand('tdm.filterNotesByTag', () => {
+		if (!homeDir) {
+			vscode.window.showErrorMessage(MSG_NO_TDM_FILE_IN_FOLDER);
+			return;
+		}
+
 		const tdmIndexStatus = tdmIndex.getStatus();
 		if (tdmIndexStatus === "pending") {
 			vscode.window.showInformationMessage(MSG_INDEX_BUILDING);
@@ -105,6 +132,11 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 	subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(scheme, provider));
 
 	subscriptions.push(vscode.commands.registerCommand('tdm.showStats', async () => {
+		if (!homeDir) {
+			vscode.window.showErrorMessage(MSG_NO_TDM_FILE_IN_FOLDER);
+			return;
+		}
+
 		const tdmIndexStatus = tdmIndex.getStatus();
 		if (tdmIndexStatus === "pending") {
 			vscode.window.showInformationMessage(MSG_INDEX_BUILDING);
