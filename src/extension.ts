@@ -5,9 +5,9 @@ import { createNote, toggleTask } from './notes';
 import { filterNotesByTag, getStatistic } from './ui';
 import { toLocalTime, getDirsWithTDMFile } from "./utils";
 
-const MSG_INDEX_BUILDING = 'Todomator: Index is building, please try again later...';
-const MSG_INDEX_BUILD_WITH_ERROR = 'Todomator: Error occurred while building index, please try again later...';
-const MSG_NOT_TDM_FOLDER = 'To activate Todomator: open your Notes directory as a workspace. This directory should contain file named ".todomator"';
+const MSG_INDEX_BUILDING = '🤖 Todomator Index is building, please try again later...';
+const MSG_INDEX_BUILD_WITH_ERROR = '🥵 Error occurred while building Todomator index, please try again later...';
+const MSG_NOT_TDM_FOLDER = '🚧 To activate Todomator: open your Notes directory as a workspace. This directory should contain file named ".todomator"';
 
 function addTagsToIntelliSense(tdmIndex: TDMIndex) {	
 	const triggerCharacters = [...tdmIndex.getUniqueCharsFromTags()];
