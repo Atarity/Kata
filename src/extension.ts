@@ -7,7 +7,7 @@ import { toLocalTime, getDirsWithTDMFile } from "./utils";
 
 const MSG_INDEX_BUILDING = 'Todomator: Index is building, please try again later...';
 const MSG_INDEX_BUILD_WITH_ERROR = 'Todomator: Error occurred while building index, please try again later...';
-const MSG_NO_TDM_FILE_IN_FOLDER = 'Todomator: File .todomator not found in workspace folder...';
+const MSG_NOT_TDM_FOLDER = 'To activate Todomator: open your Notes directory as a workspace. This directory should contain file named ".todomator"';
 
 function addTagsToIntelliSense(tdmIndex: TDMIndex) {	
 	const triggerCharacters = [...tdmIndex.getUniqueCharsFromTags()];
@@ -34,7 +34,9 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 	let tdmIndex = new TDMIndex();
 	let intelliSenseProviderIndex: number = -1;
 	
-	homeDir = getDirsWithTDMFile(vscode.workspace.workspaceFolders[0].uri.fsPath, [])[0] || null;
+	if (vscode.workspace.workspaceFolders) {
+		homeDir = getDirsWithTDMFile(vscode.workspace.workspaceFolders[0].uri.fsPath, [])[0] || null;
+	}
 
 	if (homeDir) {
 		tdmIndex.setHomeDir(homeDir);
@@ -50,7 +52,7 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 	// Rebuild index
 	subscriptions.push(vscode.commands.registerCommand('tdm.rebuildIndex', () => {
 		if (!homeDir) {
-			vscode.window.showErrorMessage(MSG_NO_TDM_FILE_IN_FOLDER);
+			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
 			return;
 		}
 
@@ -85,7 +87,7 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
     // Create new note
 	subscriptions.push(vscode.commands.registerCommand('tdm.createNote', () => {
 		if (!homeDir) {
-			vscode.window.showErrorMessage(MSG_NO_TDM_FILE_IN_FOLDER);
+			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
 			return;
 		}
 
@@ -95,7 +97,7 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 	// Toggle task
 	subscriptions.push(vscode.commands.registerCommand('tdm.toggleTask', () => {
 		if (!homeDir) {
-			vscode.window.showErrorMessage(MSG_NO_TDM_FILE_IN_FOLDER);
+			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
 			return;
 		}
 		
@@ -105,7 +107,7 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 	// Filter notes by tags
 	subscriptions.push(vscode.commands.registerCommand('tdm.filterNotesByTag', () => {
 		if (!homeDir) {
-			vscode.window.showErrorMessage(MSG_NO_TDM_FILE_IN_FOLDER);
+			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
 			return;
 		}
 
@@ -133,7 +135,7 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 
 	subscriptions.push(vscode.commands.registerCommand('tdm.showStats', async () => {
 		if (!homeDir) {
-			vscode.window.showErrorMessage(MSG_NO_TDM_FILE_IN_FOLDER);
+			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
 			return;
 		}
 
