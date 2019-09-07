@@ -1,206 +1,159 @@
-"use strict";
 import * as vscode from "vscode";
-import * as fs from "fs";
 import * as path from "path";
+import { TDMIndex } from './classes';
+import { createNote, toggleTask } from './notes';
+import { filterNotesByTag, getStatistic } from './ui';
+import { toLocalTime, getDirsWithTDMFile } from "./utils";
 
-const CONFIGURATION_SECTION = "tdm";
-const TEMP_HOMEDIR = "/Users/Atarity/tdm-test/";
-//const TEMP_HOMEDIR = "";
+const MSG_INDEX_BUILDING = 'Todomator\'s index is building 🤖 right now. Try again later.';
+const MSG_INDEX_BUILD_WITH_ERROR = 'Error occurred 🥵 while building Todomator\'s index. See details in log.';
+const MSG_NOT_TDM_FOLDER = 'To activate 🏀 Todomator: Open your Notes as a workspace directory. This directory should contain ".todomator" file.';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-    const tdmController = new TDMController();
-    // Transform filename from userinput to Title without dashes
-    function fileToTitle(fileName) {
-        var result = fileName.slice(11,-3);
-        return result.charAt(0).toUpperCase() + result.replace(/-/g, " ").slice(1);
-    }
+function addTagsToIntelliSense(tdmIndex: TDMIndex) {	
+	const triggerCharacters = [...tdmIndex.getUniqueCharsFromTags()];
+	return vscode.languages.registerCompletionItemProvider('markdown', {
+		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+			const linePrefix = document.lineAt(position).text.substr(0, position.character);
+			if (!linePrefix.startsWith('tags:')) {
+				return;
+			}
+			const tags = tdmIndex.getTagsIndex();
+			return tags.map(item => {
+				const simpleCompletion = new vscode.CompletionItem(item.name, vscode.CompletionItemKind.Text);
+				simpleCompletion.insertText = `${item.name}, `;
+				simpleCompletion.sortText = item.name.toUpperCase();
+				return simpleCompletion;
+			});
+		}
+	}, ...triggerCharacters);
+}
 
-    var toLocalTime = function() {
-        var d = new Date();
-        var offset = (d.getTimezoneOffset() * 60000) * -1;  // Minutes to milliseconds
-        var n = new Date(d.getTime() + offset); // Calculate unix-time for local machine
-        return n;
-    };
-    // Check user input filename
-    var isValid = (function() {
-        var rg1=/^[^\\/:\*\?"<>\|\[\]\{\}]+$/; // forbidden and special characters \ / : * ? " < > | [ ] { }
-        var rg2=/^\./; // cannot start with dot (.)
-        var rg3=/^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i; // forbidden file names in Win
-        return function isValid(fname) {
-          return rg1.test(fname)&&!rg2.test(fname)&&!rg3.test(fname);
-        }
-    })();
+export function activate({ subscriptions }: vscode.ExtensionContext) {
+	// TODO: сделать настройку зачёркивание выполненных тасков
+	let homeDir: string;
+	let tdmIndex = new TDMIndex();
+	let intelliSenseProviderIndex: number = -1;
+	
+	if (vscode.workspace.workspaceFolders) {
+		homeDir = getDirsWithTDMFile(vscode.workspace.workspaceFolders[0].uri.fsPath, [])[0] || null;
+	}
 
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with  registerCommand
-    // The commandId parameter must match the command field in package.json
-    vscode.commands.registerCommand("tdm.newEntry", async () => {
-        var datetime = toLocalTime().toISOString().slice(0,10);
-        const fileName = await vscode.window.showInputBox({prompt: "Edit Entry's filename", value: datetime + "-todo.md", valueSelection: [11, 15]});
-        // Check null input or form esc
-        if (fileName === undefined || fileName === null || fileName === "" ) {
-            return;
-        } else {
-            var yearDir = path.join(tdmController.homeDirectory, datetime.substring(0, 4));
-            var filePath = path.join(yearDir, fileName);   // homeDir to string
-            // Check if the file name contains restricted chars
-            if (!isValid(fileName)) {
-                vscode.window.showErrorMessage(fileName + " name contains forbidden characters.")
-                return;
-            }
-            // Create dir if not exist
-            if (!fs.existsSync(yearDir)) {
-                fs.mkdirSync(yearDir)
-                vscode.window.showInformationMessage("New directory created. Happy NY, then! " + yearDir)
-                //return;
-            }
-            // Check if the file already exist
-            if (fs.existsSync(filePath)) {
-                vscode.window.showErrorMessage(fileName + " already exist. Try another name.")
-                return;
-            }
-        }
-        // Create new file
-        var stream = fs.createWriteStream(filePath);
-        stream.once('open', function(fd) {
-            stream.write("---\n");
-            stream.write("title: " + fileToTitle(fileName) + "\n");
-            stream.write("tags:\n");
-            stream.write("---\n\n");
-            stream.end();
-        });
-        // Open new file and move coursor
-        const fileUri = vscode.Uri.file(filePath);  // OR uri.parse ("file:" + filePath)
-        vscode.workspace.openTextDocument(fileUri).then(document => {
-            const edit = new vscode.WorkspaceEdit();
-            vscode.window.showTextDocument(document).then(success => {
-                if (success) {
-                    vscode.window.activeTextEditor.selection = new vscode.Selection(new vscode.Position(5, 0), new vscode.Position(5, 0));
-                } else {
-                    vscode.window.showInformationMessage("Error while creating an Entry!");
-                    return;
-                }
-            });
-        });
-    });
+	if (homeDir) {
+		tdmIndex.setHomeDir(homeDir);
+		tdmIndex.rebuildHomeDirIndex().then(() => {
+			// Set tags in IntelliSense
+			if (intelliSenseProviderIndex !== -1) {
+				subscriptions[intelliSenseProviderIndex].dispose();
+			}
+			intelliSenseProviderIndex = subscriptions.push(addTagsToIntelliSense(tdmIndex));
+		});
+	}
 
-    vscode.commands.registerCommand("tdm.showStats", () => {
-        tdmController.CountAll();
-    });
-    // if todo not in string → add it. If todo in string → close it. If todo closed → open it. All by 1 hotkey loop.
-    vscode.commands.registerCommand("tdm.markAsDone", () => {
-        const editor = vscode.window.activeTextEditor;
-        let curs = editor.selection.active; // returns Position (line, char)
-        // console.log(`Cursor line is ${curs.line} and char is ${curs.character}`);
-        var currLine = editor.document.getText(new vscode.Range(curs.line, 0, curs.line + 1, 0));
-        var tdLine = currLine.trim().substr(0,6);
-        var tdMarks = ['- [  ]', '- [ ]', '- []', '- [X]', '- [x]', '- [Х]', '- [х]'];
-        var i = tdMarks.length;
-        while (i--) {
-            // if it is todo and need to set X
-            if (tdLine.indexOf(tdMarks[i]) != -1 && i > 2) {
-                //console.log("RELEASE", tdLine, tdMarks[i], i);
-                var idx = currLine.indexOf("-");
-                editor.edit(editBuilder => {
-                    editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + tdMarks[i].length), "- [ ]"); 
-                });
-            // if it is todo and need to unset X     
-            } else if (tdLine.indexOf(tdMarks[i]) != -1 && i < 3) {
-                //console.log("SET", tdLine, tdMarks[i], i);
-                var idx = currLine.indexOf("-");
-                editor.edit(editBuilder => {
-                    editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + tdMarks[i].length), "- [X]"); 
-                });
-            // if it is not a todo line, make it so
-            } else if (tdLine.indexOf(tdMarks[i]) < 0 && i == 0) {
-                //console.log(tdLine.indexOf(tdMarks[i]), i)
-                var idx = currLine.search(/\S/);
-                // if it is a new line point the idx to the very beginning of it
-                if (idx < 0) {idx = 0;}
-                editor.edit(editBuilder => {
-                    editBuilder.insert(new vscode.Position(curs.line, idx), "- [ ] ")
-                    //editBuilder.replace(new vscode.Range(curs.line ,idx, curs.line, idx + 5), "- [ ] "); 
-                });
-            }
-        }
-    });
+	// Rebuild index
+	subscriptions.push(vscode.commands.registerCommand('tdm.rebuildIndex', () => {
+		if (!homeDir) {
+			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			return;
+		}
 
-    context.subscriptions.push;
+		tdmIndex.rebuildHomeDirIndex().then(() => {
+			// Set tags in IntelliSense
+			if (intelliSenseProviderIndex !== -1) {
+				subscriptions[intelliSenseProviderIndex].dispose();
+			}
+			subscriptions.push(addTagsToIntelliSense(tdmIndex));
+		});
+	}));
+
+	// Update file index when file changed
+	vscode.workspace.onDidSaveTextDocument(document => {
+		if (!homeDir) {
+			return;
+		}
+
+		const filePath: string = document.fileName; 
+		if (path.extname(filePath) === ".md") {
+			tdmIndex.rebuildFileIndex(filePath).then(() => {
+				tdmIndex.rebuildTagsIndex();
+				// Set tags in IntelliSense
+				if (intelliSenseProviderIndex !== -1) {
+					subscriptions[intelliSenseProviderIndex].dispose();
+				}
+				intelliSenseProviderIndex = subscriptions.push(addTagsToIntelliSense(tdmIndex));
+			});
+		} 
+	});
+
+    // Create new note
+	subscriptions.push(vscode.commands.registerCommand('tdm.createNote', () => {
+		if (!homeDir) {
+			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			return;
+		}
+
+		createNote(homeDir);
+	}));
+	
+	// Toggle task
+	subscriptions.push(vscode.commands.registerCommand('tdm.toggleTask', () => {
+		if (!homeDir) {
+			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			return;
+		}
+		
+		toggleTask();
+	}));
+
+	// Filter notes by tags
+	subscriptions.push(vscode.commands.registerCommand('tdm.filterNotesByTag', () => {
+		if (!homeDir) {
+			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			return;
+		}
+
+		const tdmIndexStatus = tdmIndex.getStatus();
+		if (tdmIndexStatus === "pending") {
+			vscode.window.showInformationMessage(MSG_INDEX_BUILDING);
+			return;
+		} else if (tdmIndexStatus === "error") {
+			vscode.window.showErrorMessage(MSG_INDEX_BUILD_WITH_ERROR);
+			return;
+		}
+		const tagIndex = tdmIndex.getTagsIndex();
+		filterNotesByTag(homeDir, tagIndex);
+	}));
+
+	// Show statistic
+	const scheme = 'TDM';
+	const provider = new class implements vscode.TextDocumentContentProvider {
+		provideTextDocumentContent(uri: vscode.Uri): string {
+			const stat: string = getStatistic(tdmIndex);
+			return stat;
+		}
+	};
+	subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(scheme, provider));
+
+	subscriptions.push(vscode.commands.registerCommand('tdm.showStats', async () => {
+		if (!homeDir) {
+			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			return;
+		}
+
+		const tdmIndexStatus = tdmIndex.getStatus();
+		if (tdmIndexStatus === "pending") {
+			vscode.window.showInformationMessage(MSG_INDEX_BUILDING);
+			return;
+		} else if (tdmIndexStatus === "error") {
+			vscode.window.showErrorMessage(MSG_INDEX_BUILD_WITH_ERROR);
+			return;
+		}
+		const now = toLocalTime().toISOString().slice(0,19).replace(/:/g, "-");
+		const uri = vscode.Uri.parse(`${ scheme }: ${ now }-stat.md`);
+		let doc = await vscode.workspace.openTextDocument(uri);
+		await vscode.window.showTextDocument(doc, { preview: false });		
+	}));
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-}
-
-class TDMController {
-    private configuration: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(CONFIGURATION_SECTION);
-    private statAn_: StatAn|null = null;
-
-    public get homeDirectory() {
-        var homeDir = "";
-        if (TEMP_HOMEDIR.length > 0) {
-            homeDir = TEMP_HOMEDIR;
-        } else {
-            switch (process.platform) {
-                case "darwin":
-                    homeDir = this.configuration.get("homeDirMac");
-                    //var homeDir = vscode.workspace.getConfiguration().get("tdm.homeDirMac");
-                    break;
-                case "linux":
-                    homeDir = this.configuration.get("homeDirLinux");
-                    //var homeDir = vscode.workspace.getConfiguration().get("tdm.homeDirLinux");
-                    break;
-                case "win32":
-                    homeDir = this.configuration.get("homeDirWin");
-                    //var homeDir = vscode.workspace.getConfiguration().get("tdm.homeDirWin");
-                    break;
-            }
-        }
-        return homeDir;
-    }
-
-    private get statAn() {
-        if (this.statAn_ === null) {
-            //console.log("Todomator: creating StatAn class");
-            this.statAn_ = new StatAn();
-        }
-        return this.statAn_;
-    }
-
-    public CountAll(){
-        this.statAn.FileCounter(this.homeDirectory);
-        //console.log(this.homeDirectory);
-    }
-}
-
-class StatAn {
-    public FileCounter(dir: string) {
-        const includes = ["**/*"];
-        const excludes = [];
-        console.log("Todomator: tdm.homeDir is ", dir);
-        vscode.workspace.findFiles(`{${includes.join(',')}}`, `{${excludes.join(',')}}`).then((files: vscode.Uri[]) => {
-            new Promise((resolve: (p: string[])=> void, reject: (reason: string) => void) => {
-                const filePathes = files.map(uri => uri.fsPath).filter(p => !path.relative(dir, p).startsWith('..'));
-                //console.log(`Todomator: ${filePathes.length} files`);
-                resolve(filePathes);
-            }).then((filePathes: string[]) => {
-                var k = filePathes.length;
-                var md = 0;
-                var rest = 0;
-                while (k--) {
-                    if (path.extname(filePathes[k]) == ".md") {
-                        md = md + 1;
-                    } else {
-                        rest = rest + 1;
-                        console.log(`Todomator: non-MD file found: ${filePathes[k]}`);
-                        }
-                }
-                vscode.window.showInformationMessage(`in ${dir} workspace: Total files = ${filePathes.length} . MD files = ${md} . Other files = ${rest}`);
-            }).catch((reason: string) => {
-                vscode.window.showErrorMessage(`Todomator: Error has occurred.`, reason);
-            });
-        });
-    }
 }

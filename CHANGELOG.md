@@ -1,18 +1,28 @@
 # Changelog
-All notable changes to this project will be documented in this file.
+All notable changes of the project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 - Check: [List of generators](https://github.com/myles/awesome-static-generators)
-- Request: To check the extension with [tags parsing](https://github.com/patleeman/VSNotes)
-- Highlighting: closed task (dim)
-- Highlighting: strike-thru (stroke)
-- Request: report non .MD filenames into console.log on Show Stats
-- Request: breakdown stats by filetypes years and months. Show results in temp file
-- Request: add python tool for olde journal entries conversion
 - Request: add job for jekyll site compilation from a notes
+
+## [0.0.11] — 2019-09-07
+### Added
+- Tags autocompletion added. With Unicode support.
+- "Filter notes by tag" feature added.
+- "Show Statistics" feature added.
+- Unified index for notes implemented. Smart index update make tags. stats and sorting work lightning-fast even with 10k files.
+- New "todo hotkey" cycling behaviour.
+- Nested todos added.
+- ~~Strikethru~~ for closed tasks.
+- Grammar injection for closed tasks (now they are dimmable).
+- DB tools scripts added for debug, testing, notes import.
+- Updated activation conditions for extension. No more homeDir in settings.
+- Work with any directory which contains file named ```.todomator```.
+- Updated notifications. Now with emoji!
+- New "Symfony code" concept by Siropkin.)
 
 ## [0.0.5] — 2019-05-23
 ### Fixed

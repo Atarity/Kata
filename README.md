@@ -1,39 +1,41 @@
 # Todomator VS Code extension
 
 Todomator is a simple automator for everyday note taking needs. Each note entry:
-1. Saved in .md with file name like ```2018-06-13-todo.md```
-2. Each entry have YAML meta data at the top of file. It contains "Title" and manually filled "Tags" sections.
+- Saved in .md file with name like ```2018-06-13-todo.md```
+- Have an YAML meta data at the beggining of a file. It contains "Title" and "Tags" sections with autocompleteon.
 
-## Useful links
-- https://github.com/uctakeoff/vscode-counter
-- https://github.com/Microsoft/vscode-extension-samples/tree/master/completions-sample
+## 🦄 Features
+- Automatic file naming and meta data addition
+- Hotkey for todo state cycling
+- Nested todos
+- Tags autocompletion for notes
+- Notes filtering by tags
+- Brief statistics
+- Old-fashioned cloud sync
+- Grammar injection for wider theme options (you could dim closed tasks)
+- All your files and notes are only yours.
 
-## Features
-- Hotkey <kbd>Ctrl</kbd>+<kbd>T</kbd> to make new note entry with today's name, which can be easily corrected.
-- Auto meta addition
-- OS-related user settings for Notes home directory
+## 🎮 How to install and use
+1. Open folder with your Notes or create new folder then open it from VS Code as a folder.
+1. Create empty file named `.todomator` and put it to your Notes folder.
+1. Open VS Code. From F1 menu Run `>Extensions: Install from VSIX...`. Point to the Todomator extension file with .vsix extension.
+1. Press <kbd>Ctrl</kbd>+<kbd>T</kbd> to create new note file. A name could be corrected before confirmation.
+1. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> to create new todo entry in file.
+1. Fill free to use all Markdown capabilities in your notes.
 
-## Extension Settings
+## 🔧 Extension Settings
 This extension contributes the following settings:
 
-* `tdm.homeDirMac`: Path to your Notes home directory. Use POSIX path to the directory with notes, like ```/Users/foo/Notes/```. It can be cloud folder with local representation. Like a Dropbox. Google Drive, etc.
-* `tdm.homeDirWin`: same for Windows (with back-slashes → / ) in case you are using different machines.
-* `tdm.homeDirLinux`: same for Linux.
+* `tdm.strikethruOnDone`: If enabled all closed tasks will wrapped in `~~` so it will be ~~stroke~~ during rendering.
 
-## Known Issues
+## 🐛 Known Issues
 It's a proto, so most of exceptions not even tried to be caught.
 
-## Packaging for off-the-Marketplace distribution
-- `npm install` and `npm install -g vsce`
-- `npm run compile`
-- [VS code tut on packaging and publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#packaging-extensions)
-
-## Release notes
+## 🆕 Release notes
 You can find detailed release notes in `Changelog.md`
 
-- File creation with auto-naming
-- Pre-fill YAML meta section in each note (title-based)
-- User settings for default dirrectory for different operating systems (tdm.homeDir)
-- Hotkey for new entry — Ctrl+T
-- One key todo loop with Ctrk+Shift+Q: If todo not in current string → add it. If todo in string → close it. If todo closed → open it. 
-
+## 📦 Packaging for off-the-Marketplace distribution
+- `npm install` and `npm install -g vsce`
+- `npm run compile`
+- `vsce package`
+- [VS code tut on packaging and publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#packaging-extensions)

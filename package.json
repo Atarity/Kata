@@ -2,7 +2,7 @@
     "name": "tdm",
     "displayName": "Todomator",
     "description": "Bore-friendly notetaking automator and parser.",
-    "version": "0.0.5",
+    "version": "0.0.11",
     "repository": {
         "type": "git",
         "url": "https://github.com/Atarity/Todomator.git"
@@ -15,9 +15,7 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:tdm.newEntry",
-        "onCommand:tdm.showStats",
-        "onCommand:tdm.markAsDone"
+        "onLanguage:markdown"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -29,34 +27,41 @@
             }
         ],
         "configuration": [
-            {
-                "title": "Directory with notes",
-                "properties": {
-                    "tdm.homeDirMac": {
-                        "type": "string",
-                        "scope": "resource",
-                        "default": "/Users/foo/Notes/",
-                        "description": "POSIX path to the directory with Todomator's notes."
-                    },
-                    "tdm.homeDirWin": {
-                        "type": "string",
-                        "scope": "resource",
-                        "default": "C:/Users/foo/Notes/",
-                        "description": "POSIX path (back-slashed for Windows) to the directory with Todomator's notes."
-                    },
-                    "tdm.homeDirLinux": {
-                        "type": "string",
-                        "scope": "resource",
-                        "default": "/Users/foo/Notes/",
-                        "description": "POSIX path to the directory with Todomator's notes."
-                    }
-                }
-            }
         ],
+        "menus": {
+            "commandPalette": [
+              {
+                "command": "tdm.rebuildIndex",
+                "when": "editorLangId == markdown"
+              },
+              {
+                "command": "tdm.createNote",
+                "when": "editorLangId == markdown"
+              },
+              {
+                "command": "tdm.filterNotesByTag",
+                "when": "editorLangId == markdown"
+              },
+              {
+                "command": "tdm.showStats",
+                "when": "editorLangId == markdown"
+              }
+            ]
+        },
         "commands": [
             {
-                "command": "tdm.newEntry",
-                "title": "New Entry",
+                "command": "tdm.rebuildIndex",
+                "title": "Rebuild index",
+                "category": "Todomator"
+            },
+            {
+                "command": "tdm.createNote",
+                "title": "Create new note",
+                "category": "Todomator"
+            },
+            {
+                "command": "tdm.filterNotesByTag",
+                "title": "Filter notes by tag",
                 "category": "Todomator"
             },
             {
@@ -67,11 +72,11 @@
         ],
         "keybindings": [
             {
-                "command": "tdm.newEntry",
+                "command": "tdm.createNote",
                 "key": "Ctrl+T"
             },
             {
-                "command": "tdm.markAsDone",
+                "command": "tdm.toggleTask",
                 "key": "Ctrl+Shift+Q",
                 "when": "editorTextFocus && editorLangId == markdown"
             }
@@ -89,5 +94,8 @@
         "@types/node": "^7.0.43",
         "typescript": "^2.6.1",
         "vscode": "^1.1.28"
+    },
+    "dependencies": {
+        "gray-matter": "^4.0.2"
     }
 }
