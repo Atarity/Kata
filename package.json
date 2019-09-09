@@ -2,7 +2,7 @@
     "name": "tdm",
     "displayName": "Todomator",
     "description": "Bore-friendly notetaking automator and parser.",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "repository": {
         "type": "git",
         "url": "https://github.com/Atarity/Todomator.git"
@@ -23,29 +23,41 @@
             {
                 "path": "./syntaxes/injection.json",
                 "scopeName": "task-state.injection",
-                "injectTo": ["text.html.markdown"]
+                "injectTo": [
+                    "text.html.markdown"
+                ]
             }
         ],
         "configuration": [
+            {
+                "title": "Todomator",
+                "properties": {
+                    "tdm.Strike": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Strike completed tasks."
+                    }
+                }
+            }
         ],
         "menus": {
             "commandPalette": [
-              {
-                "command": "tdm.rebuildIndex",
-                "when": "editorLangId == markdown"
-              },
-              {
-                "command": "tdm.createNote",
-                "when": "editorLangId == markdown"
-              },
-              {
-                "command": "tdm.filterNotesByTag",
-                "when": "editorLangId == markdown"
-              },
-              {
-                "command": "tdm.showStats",
-                "when": "editorLangId == markdown"
-              }
+                {
+                    "command": "tdm.rebuildIndex",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "tdm.createNote",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "tdm.filterNotesByTag",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "tdm.showStats",
+                    "when": "editorLangId == markdown"
+                }
             ]
         },
         "commands": [

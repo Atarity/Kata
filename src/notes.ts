@@ -58,6 +58,8 @@ export async function createNote(homeDir: string) {
 }
 
 export function toggleTask() {
+    const strike = vscode.workspace.getConfiguration().get("tdm.Strike");
+
     const newTaskMarks = ['- [  ]', '- [ ]', '- []'];
     const doneTaskMarks = ['- [X]', '- [x]', '- [Х]', '- [х]']; // Still no unicode
 
@@ -81,7 +83,11 @@ export function toggleTask() {
         curTodoText = currLineText.split(newTaskMarks[newTaskMarksIndex])[1];
         curTodoText = curTodoText.trim();
         if (curTodoText) {
-            newTodoText = `- [X] ~~${ curTodoText }~~`;
+            if (strike) {
+                newTodoText = `- [X] ~~${ curTodoText }~~`;
+            } else {
+                newTodoText = `- [X] ${ curTodoText }`;
+            }
         }
     } else if (doneTaskMarksIndex > -1) {
         curTodoText = currLineText.split(doneTaskMarks[doneTaskMarksIndex])[1];
