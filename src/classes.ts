@@ -49,7 +49,8 @@ export class TDMIndex {
     private _readFileTags(filePath: string): string[] {
         const contents = fs.readFileSync(filePath);
         const parsedContent = matter(contents);
-        const tags: string[] = parsedContent.data.tags; 
+        let tags: string[] = parsedContent.data.tags;
+        tags = tags.filter(tag => tag.trim() != null);
         return tags;
     }
 
