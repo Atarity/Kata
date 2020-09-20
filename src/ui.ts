@@ -1,97 +1,95 @@
-import * as vscode from "vscode";
-import * as path from "path";
-import { TDMTagIndex, TDMIndex } from "./classes";
+import { window, Uri } from 'vscode';
+import * as path from 'path';
+import { TDMTagIndex, TDMIndex } from './classes';
 
-export function filterNotesByTag(homeDir: string, tagsIndex: TDMTagIndex[]) {
-    let uiItems = tagsIndex.map(item => {
-        return {
-            label: item.name,
-            description: item.files.length.toString()
-        };
-    });
+export const filterNotesByTag = (homeDir: string, tagsIndex: TDMTagIndex[]) => {
+    let uiItems = tagsIndex.map(({ name, files }) => ({
+        label: name,
+        description: `${files.length}`,
+    }));
 
     uiItems = uiItems.sort((a, b) => {
         if (Number(b.description) === Number(a.description)) {
             const strA = a.label.toLocaleLowerCase();
             const strB = b.label.toLocaleLowerCase();
-            return strA.localeCompare(strB);            
-         }
-         return Number(b.description) - Number(a.description);
-    });            
+            return strA.localeCompare(strB);
+        }
 
-    vscode.window.showQuickPick(uiItems).then(chosenTag => {
+        return Number(b.description) - Number(a.description);
+    });
+
+    window.showQuickPick(uiItems).then(chosenTag => {
         if (!chosenTag) {
             return;
         }
+
         const index = tagsIndex.findIndex(item => item.name === chosenTag.label);
-        uiItems = tagsIndex[index].files.map(item => {
-            return {
-                label: item,
-                description: ""
-            }
-        });
-        
-        vscode.window.showQuickPick(uiItems).then(chosenPath => {
+        const { files } = tagsIndex[index];
+        uiItems = files.sort().map(item => ({
+            label: item,
+            description: '',
+        }));
+
+        window.showQuickPick(uiItems).then(chosenPath => {
             if (!chosenPath) {
                 return;
             }
 
             const fullPath = path.join(homeDir, chosenPath.label);
-            vscode.window.showTextDocument(vscode.Uri.file(fullPath));
+            window.showTextDocument(Uri.file(fullPath));
         });
     });
 }
 
-export function getStatistic(tdmIndex: TDMIndex): string {
-    let stat: string = "";
+export const getStatistic = (tdmIndex: TDMIndex): string => {
+    let stat: string = '';
 
     // Files
     const filesIndex = tdmIndex.getFilesIndex();
-    stat = stat.concat("# Todomator brief statistics\n");
-    stat = stat.concat("\n## 📝 Files\n");
-    stat = stat.concat(`Total files in ${ tdmIndex.getHomeDir() }: **${ filesIndex.length.toString() }**\n`);
-    stat = stat.concat(`Year | Notes\n`);
-    stat = stat.concat(`--- | ---\n`);
+    stat = stat.concat('# Todomator brief statistics\n');
+    stat = stat.concat('\n## 📝 Files\n');
+    stat = stat.concat(`Total files in ${tdmIndex.getHomeDir()}: **${filesIndex.length.toString()}**\n`);
+    stat = stat.concat('Year | Notes\n');
+    stat = stat.concat('--- | ---\n');
 
     let filesGroupedByYear = filesIndex.reduce((res, item) => {
         let year = String(item.createDate.getFullYear());
         if (!/(\d{4})/.test(year)) {
-            year = "Other";
+            year = 'Other';
         }
-        ( res[year] ) ? res[year].files.push(item.name) : res[year] = {
-            files: [item.name]
+        res[year] ? res[year].files.push(item.name) : res[year] = {
+            files: [item.name],
         };
         return res;
     }, {});
 
-    Object.keys(filesGroupedByYear).map((year) => { 
-        stat = stat.concat(`${ year } | ${ filesGroupedByYear[year].files.length }\n`);
+    Object.keys(filesGroupedByYear).map((year) => {
+        stat = stat.concat(`${year} | ${filesGroupedByYear[year].files.length}\n`);
     });
 
     // Tags
-    const tagsIndex = tdmIndex.getTagsIndex();    
-    let tags = tagsIndex.map(item => {
-        return {
-            name: item.name,
-            popularity: item.files.length
-        };
-    });
+    const tagsIndex = tdmIndex.getTagsIndex();
+    let tags = tagsIndex.map(({ name, files }) => ({
+        name,
+        popularity: files.length,
+    }));
 
     tags = tags.sort((a, b) => {
         if (b.popularity === a.popularity) {
             const strA = a.name.toLocaleLowerCase();
             const strB = b.name.toLocaleLowerCase();
-            return strA.localeCompare(strB);            
+            return strA.localeCompare(strB);
         }
         return b.popularity - a.popularity;
     });
-    
-    stat = stat.concat("\n## 🏷 Tags\n");
-    stat = stat.concat(`Tag | Occurrence\n`);
-    stat = stat.concat(`--- | ---\n`);
-    tags.forEach(item => {
-        stat = stat.concat(`${ item.name } | ${ item.popularity }\n`);
+
+    stat = stat.concat('\n## 🏷 Tags\n');
+    stat = stat.concat('Tag | Occurrence\n');
+    stat = stat.concat('--- | ---\n');
+
+    tags.forEach(({ name, popularity }) => {
+        stat = stat.concat(`${name} | ${popularity}\n`);
     });
-    
+
     return stat;
 }

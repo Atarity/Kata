@@ -1,15 +1,15 @@
-import * as vscode from "vscode";
-import * as path from "path";
+import * as vscode from 'vscode';
+import * as path from 'path';
 import { TDMIndex } from './classes';
 import { createNote, toggleTask } from './notes';
 import { filterNotesByTag, getStatistic } from './ui';
-import { toLocalTime, getDirsWithTDMFile } from "./utils";
+import { getDirsWithTDMFile, toLocalTime } from './utils';
 
 const MSG_INDEX_BUILDING = 'Todomator\'s index is building 🤖 right now. Try again later.';
 const MSG_INDEX_BUILD_WITH_ERROR = 'Error occurred 🥵 while building Todomator\'s index. See details in log.';
 const MSG_NOT_TDM_FOLDER = 'To activate 🏀 Todomator: Open your Notes as a workspace directory. This directory should contain ".todomator" file.';
 
-function addTagsToIntelliSense(tdmIndex: TDMIndex) {	
+const addTagsToIntelliSense = (tdmIndex: TDMIndex) => {
 	const triggerCharacters = [...tdmIndex.getUniqueCharsFromTags()];
 	return vscode.languages.registerCompletionItemProvider('markdown', {
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
@@ -17,6 +17,7 @@ function addTagsToIntelliSense(tdmIndex: TDMIndex) {
 			if (!linePrefix.startsWith('tags:')) {
 				return;
 			}
+
 			const tags = tdmIndex.getTagsIndex();
 			return tags.map(item => {
 				const simpleCompletion = new vscode.CompletionItem(item.name, vscode.CompletionItemKind.Text);
@@ -28,14 +29,16 @@ function addTagsToIntelliSense(tdmIndex: TDMIndex) {
 	}, ...triggerCharacters);
 }
 
-export function activate({ subscriptions }: vscode.ExtensionContext) {
-	// TODO: сделать настройку зачёркивание выполненных тасков
+export const activate = ({ subscriptions }: vscode.ExtensionContext) => {
+	const { workspace, commands, window } = vscode;
+
+	// TODO: Add setting to strike done tasks
 	let homeDir: string;
 	let tdmIndex = new TDMIndex();
 	let intelliSenseProviderIndex: number = -1;
-	
-	if (vscode.workspace.workspaceFolders) {
-		homeDir = getDirsWithTDMFile(vscode.workspace.workspaceFolders[0].uri.fsPath, [])[0] || null;
+
+	if (workspace.workspaceFolders) {
+		homeDir = getDirsWithTDMFile(workspace.workspaceFolders[0].uri.fsPath, [])[0] || null;
 	}
 
 	if (homeDir) {
@@ -50,9 +53,9 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 	}
 
 	// Rebuild index
-	subscriptions.push(vscode.commands.registerCommand('tdm.rebuildIndex', () => {
+	subscriptions.push(commands.registerCommand('tdm.rebuildIndex', () => {
 		if (!homeDir) {
-			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			window.showInformationMessage(MSG_NOT_TDM_FOLDER);
 			return;
 		}
 
@@ -66,13 +69,13 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 	}));
 
 	// Update file index when file changed
-	vscode.workspace.onDidSaveTextDocument(document => {
+	workspace.onDidSaveTextDocument(document => {
 		if (!homeDir) {
 			return;
 		}
 
-		const filePath: string = document.fileName; 
-		if (path.extname(filePath) === ".md") {
+		const filePath: string = document.fileName;
+		if (path.extname(filePath) === '.md') {
 			tdmIndex.rebuildFileIndex(filePath).then(() => {
 				tdmIndex.rebuildTagsIndex();
 				// Set tags in IntelliSense
@@ -81,44 +84,46 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 				}
 				intelliSenseProviderIndex = subscriptions.push(addTagsToIntelliSense(tdmIndex));
 			});
-		} 
+		}
 	});
 
     // Create new note
-	subscriptions.push(vscode.commands.registerCommand('tdm.createNote', () => {
+	subscriptions.push(commands.registerCommand('tdm.createNote', () => {
 		if (!homeDir) {
-			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			window.showInformationMessage(MSG_NOT_TDM_FOLDER);
 			return;
 		}
 
 		createNote(homeDir);
 	}));
-	
+
 	// Toggle task
-	subscriptions.push(vscode.commands.registerCommand('tdm.toggleTask', () => {
+	subscriptions.push(commands.registerCommand('tdm.toggleTask', () => {
 		if (!homeDir) {
-			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			window.showInformationMessage(MSG_NOT_TDM_FOLDER);
 			return;
 		}
-		
+
 		toggleTask();
 	}));
 
 	// Filter notes by tags
-	subscriptions.push(vscode.commands.registerCommand('tdm.filterNotesByTag', () => {
+	subscriptions.push(commands.registerCommand('tdm.filterNotesByTag', () => {
 		if (!homeDir) {
-			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			window.showInformationMessage(MSG_NOT_TDM_FOLDER);
 			return;
 		}
 
 		const tdmIndexStatus = tdmIndex.getStatus();
-		if (tdmIndexStatus === "pending") {
-			vscode.window.showInformationMessage(MSG_INDEX_BUILDING);
-			return;
-		} else if (tdmIndexStatus === "error") {
-			vscode.window.showErrorMessage(MSG_INDEX_BUILD_WITH_ERROR);
+		if (tdmIndexStatus === 'pending') {
+			window.showInformationMessage(MSG_INDEX_BUILDING);
 			return;
 		}
+		if (tdmIndexStatus === 'error') {
+			window.showErrorMessage(MSG_INDEX_BUILD_WITH_ERROR);
+			return;
+		}
+
 		const tagIndex = tdmIndex.getTagsIndex();
 		filterNotesByTag(homeDir, tagIndex);
 	}));
@@ -127,33 +132,30 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 	const scheme = 'TDM';
 	const provider = new class implements vscode.TextDocumentContentProvider {
 		provideTextDocumentContent(uri: vscode.Uri): string {
-			const stat: string = getStatistic(tdmIndex);
-			return stat;
+			return getStatistic(tdmIndex);
 		}
 	};
-	subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(scheme, provider));
+	subscriptions.push(workspace.registerTextDocumentContentProvider(scheme, provider));
 
-	subscriptions.push(vscode.commands.registerCommand('tdm.showStats', async () => {
+	subscriptions.push(commands.registerCommand('tdm.showStats', async () => {
 		if (!homeDir) {
-			vscode.window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			window.showInformationMessage(MSG_NOT_TDM_FOLDER);
 			return;
 		}
 
 		const tdmIndexStatus = tdmIndex.getStatus();
-		if (tdmIndexStatus === "pending") {
-			vscode.window.showInformationMessage(MSG_INDEX_BUILDING);
-			return;
-		} else if (tdmIndexStatus === "error") {
-			vscode.window.showErrorMessage(MSG_INDEX_BUILD_WITH_ERROR);
+		if (tdmIndexStatus === 'pending') {
+			window.showInformationMessage(MSG_INDEX_BUILDING);
 			return;
 		}
-		const now = toLocalTime().toISOString().slice(0,19).replace(/:/g, "-");
-		const uri = vscode.Uri.parse(`${ scheme }: ${ now }-stat.md`);
-		let doc = await vscode.workspace.openTextDocument(uri);
-		await vscode.window.showTextDocument(doc, { preview: false });		
-	}));
-}
+		if (tdmIndexStatus === 'error') {
+			window.showErrorMessage(MSG_INDEX_BUILD_WITH_ERROR);
+			return;
+		}
 
-// this method is called when your extension is deactivated
-export function deactivate() {
+		const now = toLocalTime().toISOString().slice(0,19).replace(/:/g, '-');
+		const uri = vscode.Uri.parse(`${ scheme }: ${ now }-stat.md`);
+		let doc = await workspace.openTextDocument(uri);
+		await window.showTextDocument(doc, { preview: false });
+	}));
 }
