@@ -25,7 +25,7 @@ export const filterNotesByTag = (homeDir: string, tagsIndex: TDMTagIndex[]) => {
 
         const index = tagsIndex.findIndex(item => item.name === chosenTag.label);
         const { files } = tagsIndex[index];
-        uiItems = files.sort().map(item => ({
+        uiItems = files.sort().reverse().map(item => ({
             label: item,
             description: '',
         }));
