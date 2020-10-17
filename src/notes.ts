@@ -40,6 +40,7 @@ export const createNote = async (homeDir: string) => {
         stream.write(`title: ${fileToTitle(fileName)}\n`);
         stream.write('tags: [ ]\n');
         stream.write('---\n\n');
+        stream.write(`# ${fileToTitle(fileName)}\n`);
         stream.end();
     });
     // Open new file and move cursor
@@ -47,7 +48,7 @@ export const createNote = async (homeDir: string) => {
     vscode.workspace.openTextDocument(fileUri).then(document => {
         vscode.window.showTextDocument(document).then(success => {
             if (success) {
-                vscode.window.activeTextEditor.selection = new vscode.Selection(new vscode.Position(5, 0), new vscode.Position(5, 0));
+                vscode.window.activeTextEditor.selection = new vscode.Selection(new vscode.Position(7, 0), new vscode.Position(7, 0));
             } else {
                 vscode.window.showInformationMessage('Error while creating the note!');
                 return;
