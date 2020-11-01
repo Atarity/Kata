@@ -2,7 +2,7 @@
     "scopeName": "task-state.injection",
     "injectionSelector": "L:markup.list.unnumbered.markdown",
     "patterns": [ { "include": "#task-closed" } ],
-    "repository": {        
+    "repository": {
         "task-opened": {
             "begin": "(\\[\\s\\])",
             "end": "\n",

@@ -1,6 +1,6 @@
-# Todomator VS Code extension
+# Kata VS Code extension
 
-Todomator is a simple automator for everyday note taking needs. Each note entry:
+Kata is a simple automator for everyday note taking needs. Each note entry:
 - Saved in .md file with name like ```2018-06-13-todo.md```
 - Have an YAML meta data at the beggining of a file. It contains "Title" and "Tags" sections with autocompleteon.
 
@@ -17,8 +17,8 @@ Todomator is a simple automator for everyday note taking needs. Each note entry:
 
 ## 🎮 How to install and use
 1. Open folder with your Notes or create new folder then open it from VS Code as a folder.
-1. Create empty file named `.todomator` and put it to your Notes folder.
-1. Open VS Code. From F1 menu Run `>Extensions: Install from VSIX...`. Point to the Todomator extension file with .vsix extension.
+1. Create empty file named `.Kata` and put it to your Notes folder.
+1. Open VS Code. From F1 menu Run `>Extensions: Install from VSIX...`. Point to the Kata extension file with .vsix extension.
 1. Press <kbd>Ctrl</kbd>+<kbd>T</kbd> to create new note file. A name could be corrected before confirmation.
 1. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> to create new todo entry in file.
 1. Fill free to use all Markdown capabilities in your notes.
@@ -26,7 +26,7 @@ Todomator is a simple automator for everyday note taking needs. Each note entry:
 ## 🔧 Extension Settings
 This extension contributes the following settings:
 
-* `tdm.strikethruOnDone`: If enabled all closed tasks will wrapped in `~~` so it will be ~~stroke~~ during rendering.
+* `kata.strikethruOnDone`: If enabled all closed tasks will wrapped in `~~` so it will be ~~stroke~~ during rendering.
 
 ## 🐛 Known Issues
 It's a proto, so most of exceptions not even tried to be caught.

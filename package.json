@@ -1,6 +1,6 @@
 {
-    "name": "tdm",
-    "displayName": "Todomator",
+    "name": "kata",
+    "displayName": "Kata",
     "description": "Bore-friendly notetaking automator and parser.",
     "version": "0.0.12",
     "repository": {
@@ -30,9 +30,9 @@
         ],
         "configuration": [
             {
-                "title": "Todomator",
+                "title": "Kata",
                 "properties": {
-                    "tdm.Strike": {
+                    "kata.Strike": {
                         "type": "boolean",
                         "default": true,
                         "description": "Strike completed tasks."
@@ -43,52 +43,52 @@
         "menus": {
             "commandPalette": [
                 {
-                    "command": "tdm.rebuildIndex",
+                    "command": "kata.rebuildIndex",
                     "when": "editorLangId == markdown"
                 },
                 {
-                    "command": "tdm.createNote",
+                    "command": "kata.createNote",
                     "when": "editorLangId == markdown"
                 },
                 {
-                    "command": "tdm.filterNotesByTag",
+                    "command": "kata.filterNotesByTag",
                     "when": "editorLangId == markdown"
                 },
                 {
-                    "command": "tdm.showStats",
+                    "command": "kata.showStats",
                     "when": "editorLangId == markdown"
                 }
             ]
         },
         "commands": [
             {
-                "command": "tdm.rebuildIndex",
+                "command": "kata.rebuildIndex",
                 "title": "Rebuild index",
-                "category": "Todomator"
+                "category": "Kata"
             },
             {
-                "command": "tdm.createNote",
+                "command": "kata.createNote",
                 "title": "Create new note",
-                "category": "Todomator"
+                "category": "Kata"
             },
             {
-                "command": "tdm.filterNotesByTag",
+                "command": "kata.filterNotesByTag",
                 "title": "Filter notes by tag",
-                "category": "Todomator"
+                "category": "Kata"
             },
             {
-                "command": "tdm.showStats",
+                "command": "kata.showStats",
                 "title": "Show statistics",
-                "category": "Todomator"
+                "category": "Kata"
             }
         ],
         "keybindings": [
             {
-                "command": "tdm.createNote",
+                "command": "kata.createNote",
                 "key": "Ctrl+T"
             },
             {
-                "command": "tdm.toggleTask",
+                "command": "kata.toggleTask",
                 "key": "Ctrl+Shift+Q",
                 "when": "editorTextFocus && editorLangId == markdown"
             }

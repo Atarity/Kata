@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Grammar injection for closed tasks (now they are dimmable).
 - DB tools scripts added for debug, testing, notes import.
 - Updated activation conditions for extension. No more homeDir in settings.
-- Work with any directory which contains file named ```.todomator```.
+- Work with any directory which contains file named ```.kata```.
 - Updated notifications. Now with emoji!
 - New "Symfony code" concept by Siropkin.)
 
@@ -41,12 +41,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Hotkey for `- [ ]` added — Ctrl+Shift+Q
 - When cursor are in task line you can "close" it with Ctrl+Shift+W
 ### Deleted
-- Get rid of frustrated `~~` syntax. 
+- Get rid of frustrated `~~` syntax.
 
 ## [0.0.1] — 2018-06-03
 ### Added
 - File creation with auto-naming
 - Pre-fill YAML meta section in each note (title-based)
-- User settings for default dirrectory for different operating systems (tdm.homeDir)
+- User settings for default dirrectory for different operating systems (kata.homeDir)
 - Hotkey for new entry (Ctrl+T)
 - Show statistics command registered for debug needs

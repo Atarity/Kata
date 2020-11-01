@@ -1,8 +1,8 @@
 import { window, Uri } from 'vscode';
 import * as path from 'path';
-import { TDMTagIndex, TDMIndex } from './classes';
+import { KataTagIndex, KataIndex } from './classes';
 
-export const filterNotesByTag = (homeDir: string, tagsIndex: TDMTagIndex[]) => {
+export const filterNotesByTag = (homeDir: string, tagsIndex: KataTagIndex[]) => {
     let uiItems = tagsIndex.map(({ name, files }) => ({
         label: name,
         description: `${files.length}`,
@@ -41,14 +41,14 @@ export const filterNotesByTag = (homeDir: string, tagsIndex: TDMTagIndex[]) => {
     });
 }
 
-export const getStatistic = (tdmIndex: TDMIndex): string => {
+export const getStatistic = (kataIndex: KataIndex): string => {
     let stat: string = '';
 
     // Files
-    const filesIndex = tdmIndex.getFilesIndex();
-    stat = stat.concat('# Todomator brief statistics\n');
+    const filesIndex = kataIndex.getFilesIndex();
+    stat = stat.concat('# Kata brief statistics\n');
     stat = stat.concat('\n## 📝 Files\n');
-    stat = stat.concat(`Total files in ${tdmIndex.getHomeDir()}: **${filesIndex.length.toString()}**\n`);
+    stat = stat.concat(`Total files in ${kataIndex.getHomeDir()}: **${filesIndex.length.toString()}**\n`);
     stat = stat.concat('Year | Notes\n');
     stat = stat.concat('--- | ---\n');
 
@@ -68,7 +68,7 @@ export const getStatistic = (tdmIndex: TDMIndex): string => {
     });
 
     // Tags
-    const tagsIndex = tdmIndex.getTagsIndex();
+    const tagsIndex = kataIndex.getTagsIndex();
     let tags = tagsIndex.map(({ name, files }) => ({
         name,
         popularity: files.length,

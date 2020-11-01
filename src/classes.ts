@@ -3,21 +3,21 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as matter from 'gray-matter';
 
-export interface TDMFileIndex {
+export interface KataFileIndex {
     name: string;
     createDate: Date;
     tags: string[];
 }
 
-export interface TDMTagIndex {
+export interface KataTagIndex {
     name: string;
     files: string[];
 }
 
-export class TDMIndex {
+export class KataIndex {
     private _homeDir: string;
-    private _filesIndex: TDMFileIndex[];
-    private _tagsIndex: TDMTagIndex[];
+    private _filesIndex: KataFileIndex[];
+    private _tagsIndex: KataTagIndex[];
     private _uniqueCharsFromTags: string;
     private _status: string;
 
@@ -52,8 +52,8 @@ export class TDMIndex {
             if (path.extname(filePath) === '.md') {
                 const name: string = filePath.slice(this._homeDir.length + 1, filePath.length);
                 const createDate: Date = new Date(name.substr(5, 10));
-                const tags: string[] = TDMIndex._readFileTags(filePath);
-                const fileIndex: TDMFileIndex = {
+                const tags: string[] = KataIndex._readFileTags(filePath);
+                const fileIndex: KataFileIndex = {
                     name,
                     createDate,
                     tags,
@@ -122,11 +122,11 @@ export class TDMIndex {
         this._uniqueCharsFromTags = String.prototype.concat(...new Set(tagsInOneString)).replace(' ', '');
     }
 
-    getFilesIndex(): TDMFileIndex[] {
+    getFilesIndex(): KataFileIndex[] {
         return this._filesIndex;
     }
 
-    getTagsIndex(): TDMTagIndex[] {
+    getTagsIndex(): KataTagIndex[] {
         return this._tagsIndex;
     }
 

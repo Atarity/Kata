@@ -24,14 +24,14 @@ export const isValid = (() => {
     }
 })();
 
-export const getDirsWithTDMFile = function(dir: string, dirs: string[]) {
+export const getDirsWithKataFile = function(dir: string, dirs: string[]) {
     const files = fs.readdirSync(dir);
 	dirs = dirs || [];
 	files.forEach(function(file) {
         const fullFilePath = path.join(dir, file);
 	    if (fs.statSync(fullFilePath).isDirectory()) {
-		    dirs = getDirsWithTDMFile(fullFilePath, dirs);
-		} else if (file === '.todomator') {
+		    dirs = getDirsWithKataFile(fullFilePath, dirs);
+		} else if (file === '.kata') {
 			dirs.push(dir);
 		}
     });

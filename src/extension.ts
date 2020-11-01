@@ -1,16 +1,16 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { TDMIndex } from './classes';
+import { KataIndex } from './classes';
 import { createNote, toggleTask } from './notes';
 import { filterNotesByTag, getStatistic } from './ui';
-import { getDirsWithTDMFile, toLocalTime } from './utils';
+import { getDirsWithKataFile, toLocalTime } from './utils';
 
-const MSG_INDEX_BUILDING = 'Todomator\'s index is building 🤖 right now. Try again later.';
-const MSG_INDEX_BUILD_WITH_ERROR = 'Error occurred 🥵 while building Todomator\'s index. See details in log.';
-const MSG_NOT_TDM_FOLDER = 'To activate 🏀 Todomator: Open your Notes as a workspace directory. This directory should contain ".todomator" file.';
+const MSG_INDEX_BUILDING = 'Kata\'s index is building 🤖 right now. Try again later.';
+const MSG_INDEX_BUILD_WITH_ERROR = 'Error occurred 🥵 while building Kata\'s index. See details in log.';
+const MSG_NOT_KATA_FOLDER = 'To activate 🥋 Kata: Open your Notes as a workspace directory. This directory should contain ".kata" file.';
 
-const addTagsToIntelliSense = (tdmIndex: TDMIndex) => {
-	const triggerCharacters = [...tdmIndex.getUniqueCharsFromTags()];
+const addTagsToIntelliSense = (kataIndex: KataIndex) => {
+	const triggerCharacters = [...kataIndex.getUniqueCharsFromTags()];
 	return vscode.languages.registerCompletionItemProvider('markdown', {
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
 			const linePrefix = document.lineAt(position).text.substr(0, position.character);
@@ -18,7 +18,7 @@ const addTagsToIntelliSense = (tdmIndex: TDMIndex) => {
 				return;
 			}
 
-			const tags = tdmIndex.getTagsIndex();
+			const tags = kataIndex.getTagsIndex();
 			return tags.map(item => {
 				const simpleCompletion = new vscode.CompletionItem(item.name, vscode.CompletionItemKind.Text);
 				simpleCompletion.insertText = `${item.name}, `;
@@ -34,37 +34,37 @@ export const activate = ({ subscriptions }: vscode.ExtensionContext) => {
 
 	// TODO: Add setting to strike done tasks
 	let homeDir: string;
-	let tdmIndex = new TDMIndex();
+	let kataIndex = new KataIndex();
 	let intelliSenseProviderIndex: number = -1;
 
 	if (workspace.workspaceFolders) {
-		homeDir = getDirsWithTDMFile(workspace.workspaceFolders[0].uri.fsPath, [])[0] || null;
+		homeDir = getDirsWithKataFile(workspace.workspaceFolders[0].uri.fsPath, [])[0] || null;
 	}
 
 	if (homeDir) {
-		tdmIndex.setHomeDir(homeDir);
-		tdmIndex.rebuildHomeDirIndex().then(() => {
+		kataIndex.setHomeDir(homeDir);
+		kataIndex.rebuildHomeDirIndex().then(() => {
 			// Set tags in IntelliSense
 			if (intelliSenseProviderIndex !== -1) {
 				subscriptions[intelliSenseProviderIndex].dispose();
 			}
-			intelliSenseProviderIndex = subscriptions.push(addTagsToIntelliSense(tdmIndex));
+			intelliSenseProviderIndex = subscriptions.push(addTagsToIntelliSense(kataIndex));
 		});
 	}
 
 	// Rebuild index
-	subscriptions.push(commands.registerCommand('tdm.rebuildIndex', () => {
+	subscriptions.push(commands.registerCommand('kata.rebuildIndex', () => {
 		if (!homeDir) {
-			window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			window.showInformationMessage(MSG_NOT_KATA_FOLDER);
 			return;
 		}
 
-		tdmIndex.rebuildHomeDirIndex().then(() => {
+		kataIndex.rebuildHomeDirIndex().then(() => {
 			// Set tags in IntelliSense
 			if (intelliSenseProviderIndex !== -1) {
 				subscriptions[intelliSenseProviderIndex].dispose();
 			}
-			subscriptions.push(addTagsToIntelliSense(tdmIndex));
+			subscriptions.push(addTagsToIntelliSense(kataIndex));
 		});
 	}));
 
@@ -76,21 +76,21 @@ export const activate = ({ subscriptions }: vscode.ExtensionContext) => {
 
 		const filePath: string = document.fileName;
 		if (path.extname(filePath) === '.md') {
-			tdmIndex.rebuildFileIndex(filePath).then(() => {
-				tdmIndex.rebuildTagsIndex();
+			kataIndex.rebuildFileIndex(filePath).then(() => {
+				kataIndex.rebuildTagsIndex();
 				// Set tags in IntelliSense
 				if (intelliSenseProviderIndex !== -1) {
 					subscriptions[intelliSenseProviderIndex].dispose();
 				}
-				intelliSenseProviderIndex = subscriptions.push(addTagsToIntelliSense(tdmIndex));
+				intelliSenseProviderIndex = subscriptions.push(addTagsToIntelliSense(kataIndex));
 			});
 		}
 	});
 
     // Create new note
-	subscriptions.push(commands.registerCommand('tdm.createNote', () => {
+	subscriptions.push(commands.registerCommand('kata.createNote', () => {
 		if (!homeDir) {
-			window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			window.showInformationMessage(MSG_NOT_KATA_FOLDER);
 			return;
 		}
 
@@ -98,9 +98,9 @@ export const activate = ({ subscriptions }: vscode.ExtensionContext) => {
 	}));
 
 	// Toggle task
-	subscriptions.push(commands.registerCommand('tdm.toggleTask', () => {
+	subscriptions.push(commands.registerCommand('kata.toggleTask', () => {
 		if (!homeDir) {
-			window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			window.showInformationMessage(MSG_NOT_KATA_FOLDER);
 			return;
 		}
 
@@ -108,47 +108,47 @@ export const activate = ({ subscriptions }: vscode.ExtensionContext) => {
 	}));
 
 	// Filter notes by tags
-	subscriptions.push(commands.registerCommand('tdm.filterNotesByTag', () => {
+	subscriptions.push(commands.registerCommand('kata.filterNotesByTag', () => {
 		if (!homeDir) {
-			window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			window.showInformationMessage(MSG_NOT_KATA_FOLDER);
 			return;
 		}
 
-		const tdmIndexStatus = tdmIndex.getStatus();
-		if (tdmIndexStatus === 'pending') {
+		const kataIndexStatus = kataIndex.getStatus();
+		if (kataIndexStatus === 'pending') {
 			window.showInformationMessage(MSG_INDEX_BUILDING);
 			return;
 		}
-		if (tdmIndexStatus === 'error') {
+		if (kataIndexStatus === 'error') {
 			window.showErrorMessage(MSG_INDEX_BUILD_WITH_ERROR);
 			return;
 		}
 
-		const tagIndex = tdmIndex.getTagsIndex();
+		const tagIndex = kataIndex.getTagsIndex();
 		filterNotesByTag(homeDir, tagIndex);
 	}));
 
 	// Show statistic
-	const scheme = 'TDM';
+	const scheme = 'Kata';
 	const provider = new class implements vscode.TextDocumentContentProvider {
 		provideTextDocumentContent(uri: vscode.Uri): string {
-			return getStatistic(tdmIndex);
+			return getStatistic(kataIndex);
 		}
 	};
 	subscriptions.push(workspace.registerTextDocumentContentProvider(scheme, provider));
 
-	subscriptions.push(commands.registerCommand('tdm.showStats', async () => {
+	subscriptions.push(commands.registerCommand('kata.showStats', async () => {
 		if (!homeDir) {
-			window.showInformationMessage(MSG_NOT_TDM_FOLDER);
+			window.showInformationMessage(MSG_NOT_KATA_FOLDER);
 			return;
 		}
 
-		const tdmIndexStatus = tdmIndex.getStatus();
-		if (tdmIndexStatus === 'pending') {
+		const kataIndexStatus = kataIndex.getStatus();
+		if (kataIndexStatus === 'pending') {
 			window.showInformationMessage(MSG_INDEX_BUILDING);
 			return;
 		}
-		if (tdmIndexStatus === 'error') {
+		if (kataIndexStatus === 'error') {
 			window.showErrorMessage(MSG_INDEX_BUILD_WITH_ERROR);
 			return;
 		}

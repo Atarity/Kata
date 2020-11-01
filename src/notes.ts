@@ -58,7 +58,7 @@ export const createNote = async (homeDir: string) => {
 }
 
 export const toggleTask = () => {
-    const strike = vscode.workspace.getConfiguration().get('tdm.Strike');
+    const strike = vscode.workspace.getConfiguration().get('kata.Strike');
 
     const newTaskMarks = ['- [  ]', '- [ ]', '- []'];
     const doneTaskMarks = ['- [X]', '- [x]', '- [Х]', '- [х]']; // Still no unicode
