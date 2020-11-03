@@ -1,5 +1,6 @@
 out
 node_modules
+builds
 .vscode-test/
 .vscode/settings.json
 *.log

@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Check: [List of generators](https://github.com/myles/awesome-static-generators)
 - Request: add job for jekyll site compilation from a notes
 
+## [0.1.0] — 2020-10-29
+### Added
+- H1 header will be added automatically on new note according filename
+- Tags filtering sort lists by date now
+- Todomator is Kata now!
+
 ## [0.0.11] — 2019-09-07
 ### Added
 - Tags autocompletion added. With Unicode support.

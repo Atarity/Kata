@@ -1,11 +1,11 @@
 {
     "name": "kata",
     "displayName": "Kata",
-    "description": "Bore-friendly notetaking automator and parser.",
-    "version": "0.0.12",
+    "description": "Simple automator for everyday note taking and journaling.",
+    "version": "0.1.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Atarity/Todomator.git"
+        "url": "https://github.com/Atarity/Kata.git"
     },
     "publisher": "Atarity",
     "engines": {
