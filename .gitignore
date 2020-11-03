@@ -3,6 +3,7 @@ node_modules
 builds
 .vscode-test/
 .vscode/settings.json
+*.vsix
 *.log
 .DS_Store
 .idea
