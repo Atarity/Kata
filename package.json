@@ -2,7 +2,10 @@
     "name": "kata",
     "displayName": "Kata",
     "description": "Simple automator for everyday note taking and journaling",
-    "icon": "./meta/kata-thumb.jpg",
+    "icon": "meta/kata-thumb.png",
+    "galleryBanner": {
+        "color": "#95AAC4"
+    },
     "version": "0.1.1",
     "license": "GPL-3.0-or-later",
     "repository": {
@@ -11,10 +14,17 @@
     },
     "publisher": "atarity",
     "engines": {
-        "vscode": "^1.8.0"
+        "vscode": "^1.23.0"
     },
     "categories": [
         "Other"
+    ],
+    "keywords": [
+        "Notes",
+        "Journal",
+        "Markdown",
+        "Todo",
+        "Keybindings"
     ],
     "activationEvents": [
         "onLanguage:markdown"

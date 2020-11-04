@@ -2,35 +2,42 @@
 
 Kata is a simple automator for everyday note taking and journaling.
 
-Each note entry:
-- Saved in .md file with name in date-name form like a ```2018-06-13-todo.md```
-- Have an YAML meta data at the top of a file. It contains "Title" and "Tags" sections with autocompletion and can be extended.
+Each note entry will:
+- be saved in .md file with name in date-name form like a ```2018-06-13-todo.md```
+- have an YAML meta data header. It contains "title" and "tags" sections with autocompletion and can be extended.
 
-![create note](./meta/create-note.gif)
+![kata screen](./meta/kata-screen.jpg)
 
 ## 🦄 Features
-- Automatic file naming and meta on new note (<kbd>Ctrl</kbd>+<kbd>T</kbd>)
-- Hotkey for todo state cycling (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd>)
-- Notes filtering by tags (<kbd>F1</kbd> → `Kata: Filter notes by tag`)
-- Brief statistics (<kbd>F1</kbd> → `Kata: Show statistics`)
-- Tags autocompletion (<kbd>Ctrl</kbd>+<kbd>Space</kbd>)
+### Automatic file naming and meta fill on new note (<kbd>Ctrl</kbd>+<kbd>T</kbd>)
+
+![create note](./meta/new-note-b.gif)
+
+### Hotkey for todo state cycling (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd>)
+
+![create note](./meta/todo-cycle-b.gif)
+
+### Tags autocompletion (<kbd>Ctrl</kbd>+<kbd>Space</kbd>)
+
+![tags autocompletion](./meta/tags-completion-b.gif)
+
+### Notes filtering by tags (<kbd>F1</kbd> → `Kata: Filter notes by tag`)
+
+![filter by tag](./meta/filter-b.gif)
+
+### Also
+- Brief stats (<kbd>F1</kbd> → `Kata: Show statistics`)
 - Nested todos
 - Works with old-fashioned cloud sync and git
-- Grammar injection for theming (closed tasks dimming)
+- Grammar injection for theming ("closed" tasks dimming)
 - All your files and notes are only yours.
 
-## 🎮 How to install and use
-1. Open folder with your notes or create a new one. Then open it from VS Code **as a folder**.
-1. Create empty file named `.kata` and put it to notes folder.
-1. Open VS Code. Hit <kbd>F1</kbd> → run `>Extensions: Install from VSIX...`. Point to the Kata extension file with .vsix extension.
-1. Press <kbd>Ctrl</kbd>+<kbd>T</kbd> to create new note file. A name could be corrected before confirmation.
-1. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> to create new todo entry in file.
-1. Fill free to use all Markdown capabilities in your notes.
+## 🎮 How to install
+Install Kata directly from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=atarity.kata) OR by downloading `.vsix` file from [releases section](https://github.com/Atarity/Kata/releases) (then in VS Code hit <kbd>F1</kbd> → run `>Extensions: Install from VSIX...`)
+1. Create empty file named `.kata` and put it to your notes directory.
+1. Open your notes directory from VS Code **as a folder**.
 
 ## 🔧 Extension Settings
-This extension contributes the following settings:
+This extension contributes the following VS Code settings:
 
-* `kata.strikethruOnDone`: If enabled all closed tasks will wrapped in `~~` so it will be ~~stroke~~ during rendering depending on theme.
-
-## 🐛 Known Issues
-It's a preview, so most of exceptions not even tried to be caught.
+* `kata.strikethruOnDone`: If enabled all closed tasks will wrapped in `~~` so it will be ~~stroke~~ during rendering depending on theme. Enabled by default.
