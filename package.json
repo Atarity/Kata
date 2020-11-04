@@ -3,7 +3,7 @@
     "displayName": "Kata",
     "description": "Simple automator for everyday note taking and journaling",
     "icon": "./meta/kata-thumb.jpg",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "license": "GPL-3.0-or-later",
     "repository": {
         "type": "git",
