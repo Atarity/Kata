@@ -3,3 +3,5 @@
 - `npm run compile`
 - `vsce package`
 - [VS code tut on packaging and publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#packaging-extensions)
+
+- [Publish, update and unpublish extension on Marketplace](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)

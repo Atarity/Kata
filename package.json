@@ -1,16 +1,17 @@
 {
     "name": "kata",
     "displayName": "Kata",
-    "description": "Simple automator for everyday note taking and journaling.",
+    "description": "Simple automator for everyday note taking and journaling",
+    "icon": "./meta/kata-thumb.jpg",
     "version": "0.1.0",
     "license": "GPL-3.0-or-later",
     "repository": {
         "type": "git",
         "url": "https://github.com/Atarity/Kata.git"
     },
-    "publisher": "Atarity",
+    "publisher": "atarity",
     "engines": {
-        "vscode": "^1.23.0"
+        "vscode": "^1.8.0"
     },
     "categories": [
         "Other"
