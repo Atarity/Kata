@@ -33,7 +33,10 @@ Each note entry will:
 - All your files and notes are only yours.
 
 ## 🎮 How to install
-Install Kata directly from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=atarity.kata) OR by downloading `.vsix` file from [releases section](https://github.com/Atarity/Kata/releases) (then in VS Code hit <kbd>F1</kbd> → run `>Extensions: Install from VSIX...`)
+1. Install Kata
+    - directly from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=atarity.kata)
+    - by downloading `.vsix` file from [releases section](https://github.com/Atarity/Kata/releases) (then in VS Code hit <kbd>F1</kbd> → run `>Extensions: Install from VSIX...`)
+    - If you need totally the same "screenshot-like" appearance and features like wiki links, notes graph, pdf export, etc, install [Teamed with Kata](https://marketplace.visualstudio.com/items?itemName=atarity.teamed-with-katavv) extension pack instead and follow steps from it's description.
 1. Create empty file named `.kata` and put it to your notes directory.
 1. Open your notes directory from VS Code **as a folder**.
 
