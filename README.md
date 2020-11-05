@@ -1,9 +1,9 @@
 ![kata logo](./meta/kata-logo.jpg)
 
-Kata is a simple automator for everyday note taking and journaling.
+Kata is a simple automator for everyday note taking and journaling. It is a part of [Teamed with Kata](https://marketplace.visualstudio.com/items?itemName=atarity.teamed-with-kata) extension pack.
 
 Each note entry will:
-- be saved in .md file with name in date-name form like a ```2018-06-13-todo.md```
+- be saved in `.md` file with name in date-name form like a `2018-06-13-todo.md`
 - have an YAML meta data header. It contains "title" and "tags" sections with autocompletion and can be extended.
 
 ![kata screen](./meta/kata-screen.jpg)
@@ -33,10 +33,10 @@ Each note entry will:
 - All your files and notes are only yours.
 
 ## 🎮 How to install
-1. Install Kata
+1. Install Kata. Choose one of the options below:
     - directly from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=atarity.kata)
     - by downloading `.vsix` file from [releases section](https://github.com/Atarity/Kata/releases) (then in VS Code hit <kbd>F1</kbd> → run `>Extensions: Install from VSIX...`)
-    - If you need totally the same "screenshot-like" appearance and features like wiki links, notes graph, pdf export, etc, install [Teamed with Kata](https://marketplace.visualstudio.com/items?itemName=atarity.teamed-with-katavv) extension pack instead and follow steps from it's description.
+    - If you need totally the same "screenshot-like" appearance and features like wiki links, notes graph, pdf export, etc, install [Teamed with Kata](https://marketplace.visualstudio.com/items?itemName=atarity.teamed-with-kata) extension pack instead and follow steps from it's description.
 1. Create empty file named `.kata` and put it to your notes directory.
 1. Open your notes directory from VS Code **as a folder**.
 
