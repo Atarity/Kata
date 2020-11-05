@@ -1,0 +1,95 @@
+// WORKSPACE SETTINGS: Place below settings in your workspace settings file (.vscode/settings.json) to overwrite default and user settings.
+{
+    "[markdown]": {
+        "editor.dragAndDrop": false,
+        "editor.minimap.enabled" : false,
+        "editor.lineNumbers": "off",
+        "editor.quickSuggestions": false,
+        "editor.suggestOnTriggerCharacters" : false,
+        "editor.parameterHints.enabled": false,
+        "editor.wordBasedSuggestions": false,
+        "editor.fontSize": 13,
+        "editor.lineHeight": 20,
+        "editor.fontFamily": "'Menlo', 'PT Sans'",
+        "editor.fontWeight": "500",
+        "editor.fontLigatures": true,
+        "editor.cursorStyle": "line",
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 80,
+        "editor.autoClosingBrackets": "never",
+        "editor.selectionHighlight": false,
+        "editor.renderLineHighlight": "none"
+    },
+
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.renderWhitespace": "selection",
+    "editor.copyWithSyntaxHighlighting": false,
+    "editor.lightbulb.enabled": false,
+    "editor.lineNumbers": "off",
+    "editor.occurrencesHighlight": false,
+    "editor.parameterHints.enabled": false,
+    "editor.renderFinalNewline": false,
+    "editor.renderIndentGuides": false,
+    "editor.cursorBlinking": "smooth",
+    "editor.cursorSmoothCaretAnimation": true,
+    "editor.minimap.enabled": false,
+    "editor.overviewRulerBorder": false,
+    "editor.hideCursorInOverviewRuler": true,
+    "editor.snippetSuggestions": "none",
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.acceptSuggestionOnEnter": "on",
+    "editor.wordBasedSuggestions": false,
+    "editor.quickSuggestions": false,
+    "editor.matchBrackets": "never",
+    "explorer.openEditors.visible": 0,
+    "explorer.sortOrder": "default",
+    "workbench.sideBar.location": "left",
+    "workbench.activityBar.visible": false,
+    "workbench.statusBar.visible": false,
+    "workbench.tree.renderIndentGuides": "none",
+    "workbench.colorTheme": "Verdandi",
+    "files.autoSave": "onFocusChange",
+    "pasteImage.path": "${currentFileDir}/assets/${currentFileNameWithoutExt}/",
+
+    "workbench.colorCustomizations": {
+        "[Verdandi]": {
+            "scrollbarSlider.background": "#565e6546",
+        }
+    },
+
+    "editor.tokenColorCustomizations":
+    {
+        "[Verdandi]": {
+            "textMateRules": [
+                {
+                    "scope": "entity.name.tag",
+                    "settings": { "fontStyle": "" }
+                },
+                {
+                    "scope": "text.html.markdown markup.bold markup.italic",
+                    "settings": { "fontStyle": "italic bold" }
+                },
+                {
+                    "scope": [
+                        "text.html.markdown markup.quote",
+                        "punctuation.definition.quote.begin.markdown"
+                    ],
+                    "settings": { "fontStyle": "italic" }
+                },
+                {
+                    "scope": "text.html.markdown clsd.tsk",
+                    "settings": { "foreground": "#565e6546" }
+                },
+                {
+                    "scope": [
+                        "markup.heading.markdown entity.name.section",
+                        "markup.heading.markdown punctuation.definition.heading.markdown"
+                    ],
+                    "settings": { "foreground": "#51575eff",}
+                }
+            ]
+        }
+    }
+}
