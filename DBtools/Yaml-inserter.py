@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# The script will insert filename-based yaml headers to notes without.
+# The script will insert filename-based yaml headers to notes without. Frontmatter lib was updated since, so below code may fault
 
 from argparse import ArgumentParser
 from frontmatter import Frontmatter
@@ -33,9 +33,9 @@ DBpath = args.path
 
 for root, dirs, files in os.walk(DBpath):
     for filename in files:
-        #sleep(0.01) 
+        #sleep(0.01)
         if filename.endswith(".md"):
-            mdfile = os.path.join(root, filename) 
+            mdfile = os.path.join(root, filename)
             #print("CHECKING:" + mdfile)
             if is_yaml_exist(mdfile) == True:
                 print("PROPER YAML: " + mdfile)
