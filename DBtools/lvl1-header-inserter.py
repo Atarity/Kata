@@ -3,7 +3,7 @@
 
 from argparse import ArgumentParser
 from time import sleep
-import frontmatter, os
+import frontmatter, os, sys
 
 # Chech if YAML meta exists and get title node
 def get_title(filepath):
@@ -50,6 +50,7 @@ for root, dirs, files in os.walk(DBpath):
                                 count_sucess += 1
                             else:
                                 print("BROKEN NOW: " + mdfile)
+                                sys.exit(1)
                     except IOError:
                         print("FAILED!\n")
                         count_failed += 1
