@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Check: [List of generators](https://github.com/myles/awesome-static-generators)
 - Request: add job for Jekyll site compilation from a notes
 
+## [0.1.5] — 2021-06-23
+### Fixed
+- url-parse updated
+- Troubleshooting section added in description.
+
 ## [0.1.0] — 2020-10-29
 ### Added
 - H1 header will be added automatically on new note according filename

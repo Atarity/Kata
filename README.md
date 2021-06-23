@@ -34,13 +34,16 @@ Each note entry will:
 
 ## 🎮 How to install
 1. Install Kata. Choose one of the options below:
-    - directly from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=atarity.kata)
-    - by downloading `.vsix` file from [releases section](https://github.com/Atarity/Kata/releases) (then in VS Code hit <kbd>F1</kbd> → run `>Extensions: Install from VSIX...`)
+    - directly from [Marketplace](https://marketplace.visualstudio.com/items?itemName=atarity.kata) OR from VS Code itself (View → Extensions)
     - If you need totally the same "screenshot-like" appearance and features like wiki links, graph, pdf export, etc, install [Teamed with Kata](https://marketplace.visualstudio.com/items?itemName=atarity.teamed-with-kata) extension pack instead and follow steps from it's description.
-1. Create empty file named `.kata` and put it to your notes directory. If you have no notes yet additionally create at least one `.md` file manually.
+1. Create empty file named `.kata` and put it to your notes directory. If you have no notes yet create at least one `.md` file manually.
 1. Open your notes directory from VS Code **as a folder**.
 
-## 🔧 Extension Settings
+## ⚙️ Extension Settings
 This extension contributes the following VS Code settings:
 
 * `kata.strikethruOnDone`: If enabled all closed tasks will wrapped in `~~` so it will be ~~stroke~~ during rendering depending on theme. Enabled by default.
+
+## 🔧 Troubleshooting
+- Kata activated only in `.md` files. Be sure you have at least one in your Notes folder.
+- Mostly unusual behavior of VS Code can be resolved with <kbd>F1</kbd> → `Reload window` command.
